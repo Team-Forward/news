@@ -570,7 +570,7 @@ class ItemMapperV2 extends NewsMapperV2
 
     /**
      * Returns all items shared with a user
-     * 
+     *
      * @param string $userId
      * @param int    $limit
      * @param int    $offset
