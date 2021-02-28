@@ -5,7 +5,11 @@ The format is almost based on [Keep a Changelog](https://keepachangelog.com/en/1
 ## [Unreleased]
 
 ### Changed
-
+- Implemented article sharing to social media (Facebook, Twitter) or via mail
+- Implemented article sharing with a fellow nextcloud user
+- Allow users to view articles that are shared with them
+- Added tests validating the share functionality
+- UI/UX friendly design
 ### Fixed
 
 ## [15.4.0-beta2] - 2021-02-27
