@@ -185,7 +185,7 @@ class ItemServiceTest extends TestCase
         $this->assertEquals(['val'], $result);
     }
 
-    public function testFindAllShared()
+    public function testFindAllSharedWithUser()
     {
         $this->mapper->expects($this->once())
             ->method('findAllSharedWithUser')
