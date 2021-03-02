@@ -8,7 +8,12 @@ The format is almost based on [Keep a Changelog](https://keepachangelog.com/en/1
 - Add BATS as integration tests
 - Update FeedFetcher to import categories from feeds (#1248)
 - Update serialization of item to include categories (#1248)
- 
+- Implemented sharing news items between nextcloud users (#1191)
+- Updated the news items table in DB to include sharer data (#1191)
+- Added route for sharing news items (#1191)
+- Added share data in news items serialization (#1191)
+- Added tests for the news items share feature (#1191)
+
 ### Fixed
 
 ## [15.4.0-beta2] - 2021-02-27
