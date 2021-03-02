@@ -77,9 +77,9 @@ class FeedMapper extends NewsMapper
                     // think twice when changing this
                     'AND `items`.`unread` = ? ' .
                 'WHERE `feeds`.`user_id` = ? ' .
-                'AND (`feeds`.`folder_id` IS NULL ' .
-                'OR `folders`.`deleted_at` = 0 ' .
-                ') ' .
+                  'AND (`feeds`.`folder_id` IS NULL ' .
+                    'OR `folders`.`deleted_at` = 0 ' .
+                  ') ' .
                 'AND `feeds`.`deleted_at` = 0 ' .
                 'GROUP BY `feeds`.`id` ' .
             ') `item_numbers` ' .
