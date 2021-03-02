@@ -6,6 +6,11 @@ The format is almost based on [Keep a Changelog](https://keepachangelog.com/en/1
 
 ### Changed
 - Add BATS as integration tests
+- Added share item route
+- Added share data columns into items in DB
+- Implemented sharing items between nextcloud users
+- Implemented retrieving items shared with a user
+- Added tests for share functions
 
 ### Fixed
 
