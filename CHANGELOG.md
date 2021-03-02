@@ -6,6 +6,9 @@ The format is almost based on [Keep a Changelog](https://keepachangelog.com/en/1
 
 ### Changed
 - Add BATS as integration tests
+- Added article sharing
+- Added sharing articles on social media (Facebook, Twitter) or mail
+- Added 'Shared with me' menu
 
 ### Fixed
 
