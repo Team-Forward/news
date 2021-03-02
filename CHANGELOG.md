@@ -8,6 +8,9 @@ The format is almost based on [Keep a Changelog](https://keepachangelog.com/en/1
 - Add BATS as integration tests
 - Update FeedFetcher to import categories from feeds (#1248)
 - Update serialization of item to include categories (#1248)
+- Added article sharing
+- Added sharing articles on social media (Facebook, Twitter) or mail
+- Added 'Shared with me' menu
 
 ### Fixed
 - Do not show deleted feeds in item list
