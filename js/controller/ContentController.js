@@ -225,5 +225,4 @@ app.controller('ContentController', function (Publisher, FeedResource, ItemResou
     };
 
     this.activeItem = this.getFirstItem();
-
 });
