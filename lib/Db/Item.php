@@ -285,11 +285,6 @@ class Item extends Entity implements IAPI, \JsonSerializable
         return $this->starred;
     }
 
-    public function isShared(): bool
-    {
-        return $this->getSharedBy == '' && $this->getSharedWith == '';
-    }
-
     public function isUnread(): bool
     {
         return $this->unread;
@@ -321,9 +316,6 @@ class Item extends Entity implements IAPI, \JsonSerializable
             'rtl' => $this->getRtl(),
             'intro' => $this->getIntro(),
             'fingerprint' => $this->getFingerprint(),
-            'sharedBy' => $this->getSharedBy(),
-            'sharedWith' => $this->getSharedWith(),
-            'isShared' => $this->isShared()
         ];
     }
 
