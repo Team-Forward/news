@@ -78,11 +78,10 @@ class ItemMapperAfterTest extends MapperTestUtility
             ->with('items', 'news_feeds', 'feeds', 'items.feed_id = feeds.id')
             ->will($this->returnSelf());
 
-        $this->builder->expects($this->exactly(4))
+        $this->builder->expects($this->exactly(3))
             ->method('andWhere')
             ->withConsecutive(
                 ['items.last_modified >= :updatedSince'],
-                ['items.shared_by = \'\''],
                 ['feeds.user_id = :userId'],
                 ['feeds.id = :feedId']
             )
@@ -143,11 +142,10 @@ class ItemMapperAfterTest extends MapperTestUtility
             ->with('items', 'news_feeds', 'feeds', 'items.feed_id = feeds.id')
             ->will($this->returnSelf());
 
-        $this->builder->expects($this->exactly(5))
+        $this->builder->expects($this->exactly(4))
             ->method('andWhere')
             ->withConsecutive(
                 ['items.last_modified >= :updatedSince'],
-                ['items.shared_by = \'\''],
                 ['feeds.user_id = :userId'],
                 ['feeds.id = :feedId'],
                 ['items.unread = 1']
@@ -212,11 +210,10 @@ class ItemMapperAfterTest extends MapperTestUtility
             )
             ->will($this->returnSelf());
 
-        $this->builder->expects($this->exactly(4))
+        $this->builder->expects($this->exactly(3))
             ->method('andWhere')
             ->withConsecutive(
                 ['items.last_modified >= :updatedSince'],
-                ['items.shared_by = \'\''],
                 ['feeds.user_id = :userId'],
                 ['folders.id = :folderId']
             )
@@ -280,11 +277,10 @@ class ItemMapperAfterTest extends MapperTestUtility
             )
             ->will($this->returnSelf());
 
-        $this->builder->expects($this->exactly(5))
+        $this->builder->expects($this->exactly(4))
             ->method('andWhere')
             ->withConsecutive(
                 ['items.last_modified >= :updatedSince'],
-                ['items.shared_by = \'\''],
                 ['feeds.user_id = :userId'],
                 ['folders.id = :folderId'],
                 ['items.unread = 1']
@@ -325,121 +321,6 @@ class ItemMapperAfterTest extends MapperTestUtility
         $this->assertEquals([Item::fromRow(['id' => 4])], $result);
     }
 
-    public function testFindAllSharedAfter()
-    {
-        $this->db->expects($this->once())
-            ->method('getQueryBuilder')
-            ->willReturn($this->builder);
-
-        $this->builder->expects($this->once())
-            ->method('select')
-            ->with('items.*')
-            ->will($this->returnSelf());
-
-        $this->builder->expects($this->once())
-            ->method('from')
-            ->with('news_items', 'items')
-            ->will($this->returnSelf());
-
-        $this->builder->expects($this->exactly(2))
-            ->method('andWhere')
-            ->withConsecutive(
-                ['items.last_modified >= :updatedSince'],
-                ['items.shared_with = :sharedWith']
-            )
-            ->will($this->returnSelf());
-
-        $this->builder->expects($this->exactly(1))
-            ->method('setParameters')
-            ->with([
-                'updatedSince' => 1610903351,
-                'sharedWith' => 'jack',
-            ])
-            ->will($this->returnSelf());
-
-        $this->builder->expects($this->once())
-            ->method('orderBy')
-            ->with('items.last_modified', 'DESC')
-            ->will($this->returnSelf());
-
-        $this->builder->expects($this->once())
-            ->method('addOrderBy')
-            ->with('items.id', 'DESC')
-            ->willReturnSelf();
-
-        $this->builder->expects($this->once())
-            ->method('execute')
-            ->will($this->returnValue($this->cursor));
-
-        $this->cursor->expects($this->exactly(2))
-            ->method('fetch')
-            ->willReturnOnConsecutiveCalls(
-                ['id' => 4],
-                false
-            );
-
-        $result = $this->class->findAllSharedAfter('jack', 1610903351, false);
-        $this->assertEquals([Item::fromRow(['id' => 4])], $result);
-    }
-
-    public function testFindAllSharedAfterHideRead()
-    {
-        $this->db->expects($this->once())
-            ->method('getQueryBuilder')
-            ->willReturn($this->builder);
-
-        $this->builder->expects($this->once())
-            ->method('select')
-            ->with('items.*')
-            ->will($this->returnSelf());
-
-        $this->builder->expects($this->once())
-            ->method('from')
-            ->with('news_items', 'items')
-            ->will($this->returnSelf());
-
-        $this->builder->expects($this->exactly(3))
-            ->method('andWhere')
-            ->withConsecutive(
-                ['items.last_modified >= :updatedSince'],
-                ['items.shared_with = :sharedWith'],
-                ['items.unread = 1']
-            )
-            ->will($this->returnSelf());
-
-        $this->builder->expects($this->exactly(1))
-            ->method('setParameters')
-            ->with([
-                'updatedSince' => 1610903351,
-                'sharedWith' => 'jack'
-            ])
-            ->will($this->returnSelf());
-
-        $this->builder->expects($this->once())
-            ->method('orderBy')
-            ->with('items.last_modified', 'DESC')
-            ->will($this->returnSelf());
-
-        $this->builder->expects($this->once())
-            ->method('addOrderBy')
-            ->with('items.id', 'DESC')
-            ->willReturnSelf();
-
-        $this->builder->expects($this->once())
-            ->method('execute')
-            ->will($this->returnValue($this->cursor));
-
-        $this->cursor->expects($this->exactly(2))
-            ->method('fetch')
-            ->willReturnOnConsecutiveCalls(
-                ['id' => 4],
-                false
-            );
-
-        $result = $this->class->findAllSharedAfter('jack', 1610903351, true);
-        $this->assertEquals([Item::fromRow(['id' => 4])], $result);
-    }
-
     public function testFindAllAfterUnread()
     {
         $this->db->expects($this->once())
@@ -465,7 +346,7 @@ class ItemMapperAfterTest extends MapperTestUtility
             ->method('andWhere')
             ->withConsecutive(
                 ['items.last_modified >= :updatedSince'],
-                ['(feeds.user_id = :userId AND items.shared_by = \'\') OR items.shared_with = :sharedWith'],
+                ['feeds.user_id = :userId'],
                 ['items.unread = 1'],
             )
             ->will($this->returnSelf());
@@ -475,7 +356,6 @@ class ItemMapperAfterTest extends MapperTestUtility
             ->with([
                 'updatedSince' => 1610903351,
                 'userId' => 'jack',
-                'sharedWith' => 'jack'
             ])
             ->will($this->returnSelf());
 
@@ -529,7 +409,7 @@ class ItemMapperAfterTest extends MapperTestUtility
             ->method('andWhere')
             ->withConsecutive(
                 ['items.last_modified >= :updatedSince'],
-                ['(feeds.user_id = :userId AND items.shared_by = \'\') OR items.shared_with = :sharedWith'],    
+                ['feeds.user_id = :userId'],    
                 ['items.starred = 1']
             )
             ->will($this->returnSelf());
@@ -539,7 +419,6 @@ class ItemMapperAfterTest extends MapperTestUtility
             ->with([
                 'updatedSince' => 1610903351,
                 'userId' => 'jack',
-                'sharedWith' => 'jack'
             ])
             ->will($this->returnSelf());
 
@@ -593,7 +472,7 @@ class ItemMapperAfterTest extends MapperTestUtility
             ->method('andWhere')
             ->withConsecutive(
                 ['items.last_modified >= :updatedSince'],
-                ['(feeds.user_id = :userId AND items.shared_by = \'\') OR items.shared_with = :sharedWith']
+                ['feeds.user_id = :userId']
             )
             ->will($this->returnSelf());
 
@@ -602,7 +481,6 @@ class ItemMapperAfterTest extends MapperTestUtility
             ->with([
                 'updatedSince' => 1610903351,
                 'userId' => 'jack',
-                'sharedWith' => 'jack'
             ])
             ->will($this->returnSelf());
 
@@ -659,7 +537,7 @@ class ItemMapperAfterTest extends MapperTestUtility
             ->method('andWhere')
             ->withConsecutive(
                 ['items.last_modified >= :updatedSince'],
-                ['(feeds.user_id = :userId AND items.shared_by = \'\') OR items.shared_with = :sharedWith']
+                ['feeds.user_id = :userId']
             )
             ->will($this->returnSelf());
 
@@ -668,7 +546,6 @@ class ItemMapperAfterTest extends MapperTestUtility
             ->with([
                 'updatedSince' => 1610903351,
                 'userId' => 'jack',
-                'sharedWith' => 'jack'
             ])
             ->will($this->returnSelf());
 
