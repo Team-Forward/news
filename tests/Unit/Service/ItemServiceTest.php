@@ -113,17 +113,6 @@ class ItemServiceTest extends TestCase
         $result = $this->class->findAllInFolderAfter($this->user, 2, 20333, true);
         $this->assertEquals([], $result);
     }
-    
-    public function testFindAllNewShared()
-    {
-        $this->mapper->expects($this->once())
-            ->method('findAllSharedAfter')
-            ->with('jack', 20333, true)
-            ->will($this->returnValue([]));
-
-        $result = $this->class->findAllSharedAfter($this->user, 20333, true);
-        $this->assertEquals([], $result);
-    }
 
     public function testFindAllNewItem()
     {
@@ -184,26 +173,6 @@ class ItemServiceTest extends TestCase
         );
         $this->assertEquals(['val'], $result);
     }
-
-    public function testFindAllSharedWithUser()
-    {
-        $this->mapper->expects($this->once())
-            ->method('findAllSharedWithUser')
-            ->with('user', 20, 5, true, true, [])
-            ->will($this->returnValue(['val']));
-
-        $result = $this->class->findAllSharedWithUserWithFilters(
-            'user',
-            20,
-            5,
-            true,
-            true,
-            []
-        );
-
-        $this->assertEquals(['val'], $result);
-    }
-
 
     public function testFindAllItems()
     {
@@ -715,17 +684,5 @@ class ItemServiceTest extends TestCase
             ->will($this->throwException(new DoesNotExistException('')));
 
         $this->class->share('sender', 1, 'recipient');
-    }
-
-    public function testSharedCount()
-    {
-        $this->mapper->expects($this->once())
-            ->method('findAllFromUser')
-            ->with('user', ['shared_with' => 'user', 'unread' => true])
-            ->will($this->returnValue([new Item(), new Item()]));
-
-        $result = $this->class->sharedWithUser('user');
-
-        $this->assertEquals(2, count($result));
     }
 }
