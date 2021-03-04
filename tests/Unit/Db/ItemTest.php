@@ -137,7 +137,6 @@ class ItemTest extends TestCase
         $item->setStarred(true);
         $item->setLastModified(321);
         $item->setSharedBy('jack');
-        $item->setSharedWith('mclovin');
 
         $this->assertEquals(
             [
@@ -162,7 +161,6 @@ class ItemTest extends TestCase
             'intro' => 'this is a test',
             'fingerprint' => 'fingerprint',
             'sharedBy' => 'jack',
-            'sharedWith' => 'mclovin',
             'isShared' => true,
             ], $item->jsonSerialize()
         );
@@ -377,12 +375,5 @@ class ItemTest extends TestCase
         $item->setSharedBy('Hector');
         $this->assertEquals('Hector', $item->getSharedBy());
         $this->assertArrayHasKey('sharedBy', $item->getUpdatedFields());
-    }
-
-    public function testSetSharedWith(){
-        $item = new Item();
-        $item->setSharedWith('Hector');
-        $this->assertEquals('Hector', $item->getSharedWith());
-        $this->assertArrayHasKey('sharedWith', $item->getUpdatedFields());
     }
 }
