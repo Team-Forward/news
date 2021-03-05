@@ -347,7 +347,7 @@ class ItemMapperAfterTest extends MapperTestUtility
             ->withConsecutive(
                 ['items.last_modified >= :updatedSince'],
                 ['feeds.user_id = :userId'],
-                ['items.unread = 1'],
+                ['items.unread = 1']
             )
             ->will($this->returnSelf());
 
@@ -409,7 +409,7 @@ class ItemMapperAfterTest extends MapperTestUtility
             ->method('andWhere')
             ->withConsecutive(
                 ['items.last_modified >= :updatedSince'],
-                ['feeds.user_id = :userId'],    
+                ['feeds.user_id = :userId'],
                 ['items.starred = 1']
             )
             ->will($this->returnSelf());

@@ -161,7 +161,7 @@ class ItemMapperTest extends MapperTestUtility
             ->will($this->returnSelf());
 
         $this->builder->expects($this->exactly(1))
-            ->method('setParameter') 
+            ->method('setParameter')
             ->withConsecutive(['user_id', 'jack'])
             ->will($this->returnSelf());
 
@@ -386,11 +386,7 @@ class ItemMapperTest extends MapperTestUtility
 
         $this->builder->expects($this->exactly(3))
             ->method('andWhere')
-            ->withConsecutive(
-                ['feeds.user_id = :user_id'],
-                ['feeds.id = :feed_id'],
-                ['items.guid_hash = :guid_hash']
-            )
+            ->withConsecutive(['feeds.user_id = :user_id'], ['feeds.id = :feed_id'], ['items.guid_hash = :guid_hash'])
             ->will($this->returnSelf());
 
         $this->builder->expects($this->exactly(3))
