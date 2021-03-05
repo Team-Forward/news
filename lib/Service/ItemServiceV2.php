@@ -294,7 +294,6 @@ class ItemServiceV2 extends Service
         return $this->mapper->findAllInFolderAfter($userId, $folderId, $updatedSince, $hideRead);
     }
 
-
     /**
      * Returns all new items of a type
      *
