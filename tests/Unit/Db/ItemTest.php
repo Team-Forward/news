@@ -160,8 +160,7 @@ class ItemTest extends TestCase
             'rtl' => true,
             'intro' => 'this is a test',
             'fingerprint' => 'fingerprint',
-            'sharedBy' => 'jack',
-            'isShared' => true,
+            'sharedBy' => 'jack'
             ], $item->jsonSerialize()
         );
     }
