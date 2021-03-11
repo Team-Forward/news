@@ -10,6 +10,9 @@ The format is almost based on [Keep a Changelog](https://keepachangelog.com/en/1
 - Added share data columns into items in DB
 - Implemented sharing items between nextcloud users
 - Added tests for share functions
+- Added article sharing
+- Added sharing articles on social media (Facebook, Twitter) or mail
+- Added 'Shared with me' menu
 
 ### Fixed
 
