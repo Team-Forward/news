@@ -11,6 +11,7 @@ app.controller('ContentController', function (Publisher, FeedResource, ItemResou
                                               $routeParams, $location, FEED_TYPE, ITEM_AUTO_PAGE_SIZE, Loading) {
     'use strict';
 
+    this.showDropdown = [];
     var self = this;
     ItemResource.clear();
 
@@ -221,4 +222,15 @@ app.controller('ContentController', function (Publisher, FeedResource, ItemResou
     };
 
     this.activeItem = this.getFirstItem();
+
+    this.openDropdown = function(itemId){
+        let actualItem = this.showDropdown[itemId];
+        this.showDropdown = [];
+        this.showDropdown[itemId] = !actualItem;
+    };
+
+    this.hide = function(){
+        this.showDropdown = [];
+    };
+
 });
