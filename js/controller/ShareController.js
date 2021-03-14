@@ -69,4 +69,11 @@ app.controller('ShareController', function (ShareResource, Loading) {
         });
     };
 
+    this.getFacebookUrl = function(url){
+        return 'https://www.facebook.com/sharer/sharer.php?u='+url;
+    };
+
+    this.getTwitterUrl = function(url){
+        return 'https://twitter.com/intent/tweet?url='+url;
+    };
 });
