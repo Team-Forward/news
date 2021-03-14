@@ -138,26 +138,26 @@
                                     </span>
                                 </a>
 
-                                    <p class="label-group"> <?php p($l->t('Share on social media')) ?> </p>
-                                    <div class="row">
-                                        <div ng-if="Share.isSocialAppEnabled('facebook')" class="col-4">
-                                            <a target="_blank"
-                                                class="icon-dropdown icon-facebook pr-5"
-                                                ng-href="{{ Share.getFacebookUrl(item.url) }}"></a>
-                                        </div>
-                                        <div ng-if="Share.isSocialAppEnabled('twitter')" class="col-4">
-                                            <a target="_blank"
-                                                class="icon-dropdown icon-twitter pr-5"
-                                                ng-href="{{ Share.getTwitterUrl(item.url) }}"></a>
-                                        </div>
-                                        <div ng-if="Share.isSocialAppEnabled('email')" class="col-4">
-                                            <a class="icon-dropdown icon-mail pr-5"
-                                                ng-href="mailto:?subject=<?php p($l->t('I wanted you to see this article')) ?>&amp;body=<?php p($l->t('Check out this article')) ?>{{ ::item.url }}"></a>
-                                        </div>
+                                <p class="label-group"> <?php p($l->t('Share on social media')) ?> </p>
+                                <div class="row">
+                                    <div ng-if="Share.isSocialAppEnabled('facebook')" class="col-4">
+                                        <a target="_blank"
+                                            class="icon-dropdown icon-facebook pr-5"
+                                            ng-href="{{ Share.getFacebookUrl(item.url) }}"></a>
+                                    </div>
+                                    <div ng-if="Share.isSocialAppEnabled('twitter')" class="col-4">
+                                        <a target="_blank"
+                                            class="icon-dropdown icon-twitter pr-5"
+                                            ng-href="{{ Share.getTwitterUrl(item.url) }}"></a>
+                                    </div>
+                                    <div ng-if="Share.isSocialAppEnabled('email')" class="col-4">
+                                        <a class="icon-dropdown icon-mail pr-5"
+                                            ng-href="mailto:?subject=<?php p($l->t('I wanted you to see this article')) ?>&amp;body=<?php p($l->t('Check out this article')) ?>{{ ::item.url }}"></a>
                                     </div>
                                 </div>
-                            </ng-container>
-                        </li>
+                            </div>
+                        </ng-container>
+                    </li>
                     <!-- END DROPDOWN -->
 
                     <li class="util more" news-stop-propagation ng-hide="noPlugins">
