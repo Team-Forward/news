@@ -12,18 +12,12 @@
 app.controller('ShareController', function (ShareResource, Loading) {
     'use strict';
 
-    this.showDropDown = false;
-
-    this.toggleDropdown = function() {
-        this.showDropDown = !this.showDropDown;
-    };
-
     /** Array containing users to share an item with */
     this.userList = [];
 
     /**
      * @param search Username search query
-     * 
+     *
      * Retrieve users matching search query using OC
      */
     this.searchUsers = function(search) {
