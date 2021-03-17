@@ -15,25 +15,41 @@ app.controller('ShareController', function (ShareResource, Loading) {
     /** Array containing users to share an item with */
     this.userList = [];
 
+    /** Value used to check if the received response is the most recent one */
+    this.searchQuery = '';
+
+    /** True if the most recent request failed */
+    this.searchUsersFailed = false;
+
     /**
      * @param search Username search query
      *
      * Retrieve users matching search query using OC
      */
     this.searchUsers = function(search) {
-        Loading.setLoading('user', true);
+        this.searchUsersFailed = false;
         if (!search || search === '') {
             this.userList = [];
-            Loading.setLoading('user', false);
             return;
         }
 
-        var response = ShareResource.getUsers(search);
-        response.then((response) => {
-            this.userList = response.ocs.data.users;
-            Loading.setLoading('user', false);
+        Loading.setLoading('user', true);
+        this.searchQuery = search;
+
+        ShareResource.getUsers(search)
+        .then((response) => {
+            if (this.searchQuery === search) {
+                this.userList = response.ocs.data.users;
+                Loading.setLoading('user', false);
+            }
+        })
+        .catch(() => {
+            if (this.searchQuery === search) {
+                this.userList = [];
+                this.searchUsersFailed = true;
+                Loading.setLoading('user', false);
+            }
         });
-        // TODO: catch error
     };
 
     /** Dictionary mapping articles to users they're shared with */
