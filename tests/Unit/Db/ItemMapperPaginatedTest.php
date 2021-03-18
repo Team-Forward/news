@@ -30,6 +30,7 @@ use OCP\DB\QueryBuilder\IFunctionBuilder;
 use OCP\DB\QueryBuilder\IQueryBuilder;
 use OCP\DB\QueryBuilder\IQueryFunction;
 use OCP\IDBConnection;
+use OCP\IUserManager;
 use Test\TestCase;
 
 /**
@@ -44,6 +45,8 @@ class ItemMapperPaginatedTest extends MapperTestUtility
     private $time;
     /** @var ItemMapperV2 */
     private $class;
+    /** @var IUserManager */
+    private $userManager;
 
     /**
      * @covers \OCA\News\Db\ItemMapperV2::__construct
@@ -53,8 +56,10 @@ class ItemMapperPaginatedTest extends MapperTestUtility
         parent::setUp();
         $this->time = $this->getMockBuilder(Time::class)
                            ->getMock();
+        $this->userManager = $this->getMockBuilder(IUserManager::class)
+                                  ->getMock();
 
-        $this->class = new ItemMapperV2($this->db, $this->time);
+        $this->class = new ItemMapperV2($this->db, $this->time, $this->userManager);
     }
 
     public function testFindAllItemsInvalid()
