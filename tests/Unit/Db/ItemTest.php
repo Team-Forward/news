@@ -137,6 +137,7 @@ class ItemTest extends TestCase
         $item->setStarred(true);
         $item->setLastModified(321);
         $item->setSharedBy('jack');
+        $item->setSharedByDisplayName('Jack');
 
         $this->assertEquals(
             [
@@ -160,7 +161,8 @@ class ItemTest extends TestCase
             'rtl' => true,
             'intro' => 'this is a test',
             'fingerprint' => 'fingerprint',
-            'sharedBy' => 'jack'
+            'sharedBy' => 'jack',
+            'sharedByDisplayName' => 'Jack'
             ], $item->jsonSerialize()
         );
     }
