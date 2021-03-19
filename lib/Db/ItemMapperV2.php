@@ -21,7 +21,6 @@ use OCP\AppFramework\Db\Entity;
 use OCP\AppFramework\Db\MultipleObjectsReturnedException;
 use OCP\DB\QueryBuilder\IQueryBuilder;
 use OCP\IDBConnection;
-use OCP\IUserManager;
 
 /**
  * Class ItemMapper
@@ -33,49 +32,14 @@ class ItemMapperV2 extends NewsMapperV2
     const TABLE_NAME = 'news_items';
 
     /**
-     * @var IUserManager
-     */
-    private $userManager;
-
-    /**
      * ItemMapper constructor.
      *
      * @param IDBConnection $db
      * @param Time          $time
      */
-    public function __construct(IDBConnection $db, Time $time, IUserManager $userManager)
+    public function __construct(IDBConnection $db, Time $time)
     {
         parent::__construct($db, $time, Item::class);
-        $this->userManager = $userManager;
-    }
-
-    /**
-     * Override parent constructor to insert sharer display names for shared items
-     *
-     * @param IQueryBuilder $query
-     * @return Entity[] all fetched entities
-     */
-    public function findEntities(IQueryBuilder $query): array
-    {
-        $entities = parent::findEntities($query);
-
-        foreach ($entities as $entity) {
-            $sharedBy = $entity->getSharedBy();
-            $sharedByDisplayName = null;
-
-            // Get user display name
-            if (!is_null($sharedBy)) {
-                $user = $this->userManager->get($sharedBy);
-                if (!is_null($user)) {
-                    $sharedByDisplayName = $user->getDisplayName();
-                }
-            }
-
-            // Set sharer display name
-            $entity->setSharedByDisplayName($sharedByDisplayName);
-        }
-
-        return $entities;
     }
 
     /**
