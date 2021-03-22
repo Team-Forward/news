@@ -127,6 +127,26 @@ style('news', 'admin');
         <p><input type="text" name="news-update-interval"
                value="<?php p($_['updateInterval']); ?>"></p>
     </div>
+    <div class="form-line">
+        <p>
+            <label for="news-feed-fetcher-timeout">
+                <?php p($l->t('URL feeds')); ?>
+            </label>
+        </p>
+        <p>
+            <em>
+            <?php p($l->t('Description feeds')); ?></em>
+        </p>
+        <p><input type="text" name="news-feed-fetcher-timeout"
+               value="<?php p($_['urlFlux']); ?>">
+           <button
+                class="icon-add"
+                data-apps-slide-toggle="#new-folder"
+                news-focus="#new-folder [name='folderName']"
+                style="padding-top: 1.3em;">
+            </button>
+        </p>
+    </div>
     <div id="news-saved-message">
         <span class="msg success"><?php p($l->t('Saved')); ?></span>
     </div>
