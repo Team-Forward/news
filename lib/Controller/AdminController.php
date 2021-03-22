@@ -89,6 +89,7 @@ class AdminController extends Controller
      * @param bool   $useCronUpdates           Whether or not to use cron updates
      * @param string $exploreUrl               URL to use for the explore feed
      * @param int    $updateInterval           Interval in which the feeds will be updated
+     * @param string $defaultFeeds             Feed urls that users are subscribed to by default
      *
      * @return array with the updated values
      */
@@ -99,7 +100,8 @@ class AdminController extends Controller
         int $feedFetcherTimeout,
         bool $useCronUpdates,
         string $exploreUrl,
-        int $updateInterval
+        int $updateInterval,
+        string $defaultFeeds
     ): array {
         $this->config->setAppValue($this->appName, 'autoPurgeMinimumInterval', $autoPurgeMinimumInterval);
         $this->config->setAppValue($this->appName, 'autoPurgeCount', $autoPurgeCount);
@@ -108,6 +110,8 @@ class AdminController extends Controller
         $this->config->setAppValue($this->appName, 'useCronUpdates', $useCronUpdates);
         $this->config->setAppValue($this->appName, 'exploreUrl', $exploreUrl);
         $this->config->setAppValue($this->appName, 'updateInterval', $updateInterval);
+        // TODO: check if json_encode ou decode
+        $this->config->setAppValue($this->appName, 'defaultFeeds', $defaultFeeds);
 
         return $this->getData();
     }
