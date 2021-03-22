@@ -37,6 +37,10 @@ use OCP\User\Events\BeforeUserDeletedEvent;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 
+use OCP\EventDispatcher\IEventDispatcher;
+use OCP\User\Events\UserCreatedEvent;
+use OCA\News\Listener\UserCreatedListener;
+
 /**
  * Class Application
  *
@@ -67,6 +71,10 @@ class Application extends App implements IBootstrap
     public function __construct(array $urlParams = [])
     {
         parent::__construct(self::NAME, $urlParams);
+
+        /* @var IEventDispatcher $eventDispatcher */
+        $dispatcher = $this->getContainer()->query(IEventDispatcher::class);
+        $dispatcher->addServiceListener(UserCreatedEvent::class, UserCreatedListener::class);
     }
 
     public function register(IRegistrationContext $context): void
