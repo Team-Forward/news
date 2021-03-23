@@ -76,7 +76,7 @@ class Application extends App implements IBootstrap
 
         /* @var IEventDispatcher $eventDispatcher */
         $dispatcher = $this->getContainer()->query(IEventDispatcher::class);
-        $dispatcher->addServiceListener(UserCreatedEvent::class, UserCreatedListener::class);
+        // $dispatcher->addServiceListener(UserCreatedEvent::class, UserCreatedListener::class);
         $dispatcher->addServiceListener(UserLoggedInEvent::class, UserLoggedInListener::class);
     }
 
