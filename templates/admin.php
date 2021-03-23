@@ -146,6 +146,43 @@ style('news', 'admin');
                 style="padding-top: 1.3em;">
             </button>
         </p>
+        <ul class="with-icon" data-id="0" style="margin-left: 0.5em; margin-top: 1em;display:flex; flex-direction: column; list-style:disc" news-droppable>
+            <!-- the li is repeated the following is an example -->
+            <li style="display: inline-flex; margin-top: 0.7em">
+                <a style="padding-top: 0.25em"
+                    class="title"
+                    href="https://google.fr">
+                        Nextcloud News
+                </a>
+                <div style="margin-left: 1em">
+                    <ul>
+                        <li >
+                            <button
+                                class="icon-delete"
+                                style="padding-top: 1.3em;">
+                            </button>           
+                        </li>
+                    </ul>
+                </div>
+            </li>
+            <li style="display: inline-flex; margin-top: 0.7em">
+                <a style="padding-top: 0.25em"
+                    class="title"
+                    href="https://google.fr">
+                        Google RSS
+                </a>
+                <div style="margin-left: 1em">
+                    <ul>
+                        <li >
+                            <button
+                                class="icon-delete"
+                                style="padding-top: 1.3em;">
+                            </button>           
+                        </li>
+                    </ul>
+                </div>
+            </li>
+        </ul>
     </div>
     <div id="news-saved-message">
         <span class="msg success"><?php p($l->t('Saved')); ?></span>
