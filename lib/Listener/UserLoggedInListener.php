@@ -6,13 +6,13 @@ use OCP\User\Events\UserLoggedInEvent;
 use OCP\EventDispatcher\Event;
 use OCP\EventDispatcher\IEventListener;
 use OCA\News\Service\FeedServiceV2;
-use OCP\IConfig; 
+use OCP\IConfig;
 use OCA\News\AppInfo\Application;
 use OCA\News\Service\Exceptions\ServiceConflictException;
 use OCA\News\Service\Exceptions\ServiceNotFoundException;
 
-
-class UserLoggedInListener implements IEventListener {
+class UserLoggedInListener implements IEventListener
+{
 
     /**
      * Feed service
@@ -22,24 +22,26 @@ class UserLoggedInListener implements IEventListener {
 
     /**
      * Admin config
-     * @var IConfig 
+     * @var IConfig
      */
     protected $settings;
 
-    public function __construct(FeedServiceV2 $feedService, IConfig $settings) {
+    public function __construct(FeedServiceV2 $feedService, IConfig $settings)
+    {
         $this->feedService = $feedService;
         $this->settings = $settings;
     }
 
-    public function handle(Event $event): void {
-        if (!($event instanceOf UserLoggedInEvent)) {
+    public function handle(Event $event): void
+    {
+        if (!($event instanceof UserLoggedInEvent)) {
             return;
         }
 
         // Get the new user ID
         $userID = $event->getUser()->getUID();
 
-        // Get the default feeds from the db 
+        // Get the default feeds from the db
         $defaultFeeds = $this->settings->getAppValue(
             Application::NAME,
             'defaultFeeds',
@@ -49,29 +51,27 @@ class UserLoggedInListener implements IEventListener {
         // Convert the json string into a php variable
         $defaultFeeds = json_decode($defaultFeeds);
 
-        if (!is_null($defaultFeeds))
-        {
+        if (!is_null($defaultFeeds)) {
             // Adding of all the default feeds
-            foreach($defaultFeeds as $url)
-            {
-                if (!($this->feedService->existsForUser($userID, $url)))
-                {
+            foreach ($defaultFeeds as $url) {
+                if (!($this->feedService->existsForUser($userID, $url))) {
                     $this->addFeed(
                         $userID,
                         $url
                     );
-               }
+                }
             }
         }
     }
 
     /**
-     * @param string $userId 
+     * @param string $userId
      * @param string $url
-     * 
-     * @return void 
+     *
+     * @return void
      */
-    protected function addFeed(string $userId, string $url): void {
+    protected function addFeed(string $userId, string $url): void
+    {
         try {
             $feed = $this->feedService->create(
                 $userId,

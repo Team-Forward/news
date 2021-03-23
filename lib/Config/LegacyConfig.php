@@ -33,7 +33,7 @@ class LegacyConfig
     public $maxSize;
     public $exploreUrl;
     public $updateInterval;
-    public $defaultFeeds;  // json array containing feed urls 
+    public $defaultFeeds;  // json array containing feed urls
                            // that users will be subscribed to by default
 
     public function __construct(
