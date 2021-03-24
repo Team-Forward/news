@@ -8,8 +8,7 @@
  * @copyright Bernhard Posselt 2014
  */
 app.controller('ContentController', function (Publisher, FeedResource, ItemResource, SettingsResource, data, $route,
-                                              $routeParams, $location, FEED_TYPE, ITEM_AUTO_PAGE_SIZE, Loading,
-                                              $filter) {
+                                              $routeParams, $location, FEED_TYPE, ITEM_AUTO_PAGE_SIZE, Loading) {
     'use strict';
 
     this.showDropdown = [];
