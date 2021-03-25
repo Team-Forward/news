@@ -176,11 +176,11 @@ app.controller('ShareController', function (ShareResource, Loading) {
     this.getFacebookUrl = function(url, intro, categories){
         let result = 'https://www.facebook.com/sharer/sharer.php?u='+url+
             '&quote=' + intro.substring(0,100)+'...';
-        if (categories) {
-            result += '\n' + categories.map(c => '#' + c).join(' ');
+        if (categories && categories.length >= 1) {
+            result += '&hashtag=%23' + categories[0];
         }
 
-        return encodeURI(result);
+        return result;
     };
     
     this.getTwitterUrl = function(url, intro, categories){
