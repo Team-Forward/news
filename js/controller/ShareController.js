@@ -173,12 +173,24 @@ app.controller('ShareController', function (ShareResource, Loading) {
         return media.some(m => this.isSocialAppEnabled(m));
     };
 
-    this.getFacebookUrl = function(url, intro){
-        return 'https://www.facebook.com/sharer/sharer.php?u='+url + '&quote=' + intro.substring(0,100)+'...';
-    };
+    this.getFacebookUrl = function(url, intro, categories){
+        let result = 'https://www.facebook.com/sharer/sharer.php?u='+url+
+            '&quote=' + intro.substring(0,100)+'...';
+        if (categories) {
+            result += '\n' + categories.map(c => '#' + c).join(' ');
+        }
 
-    this.getTwitterUrl = function(url, intro){
-        return 'https://twitter.com/intent/tweet?url='+url+'&text=' +'\n'+ intro.substring(0,100)+'...';
+        return encodeURI(result);
+    };
+    
+    this.getTwitterUrl = function(url, intro, categories){
+        let result = 'https://twitter.com/intent/tweet?url='+url+'&text=' +
+            '\n' + intro.substring(0,100) + '...';
+        if (categories) {
+            result += '&hashtags=' + categories.join(',');
+        }
+
+        return result;
     }; 
 
     this.getEmailUrl = function(url, object, body, intro){
