@@ -155,6 +155,28 @@
 
                         <div ng-if="Share.isAnySocialAppEnabled()">
                             <p class="label-group"> <?php p($l->t('Share on social media')) ?> </p>
+                            <!-- Hashtags -->
+                            <div class="default-hashtags">
+                                <ul>    
+                                    <li>
+                                        <input type="checkbox" id="unistra">
+                                        <label for="unistra">#unistra</label>
+                                    </li>
+                                    <li>
+                                        <input type="checkbox" id="es">
+                                        <label for="es">#es</label>
+                                    </li>
+                                    <li>
+                                        <input type="checkbox" id="dnconsultants">
+                                        <label for="dnconsultants">#dnconsultants</label>
+                                    </li>
+                                    <li>
+                                        <input type="checkbox" id="projetmaster">
+                                        <label for="projetmaster">#projetmaster</label>
+                                    </li>
+                                </ul>
+                            </div>
+                            <!-- Social media buttons -->
                             <div class="row">
                                 <div ng-if="Share.isSocialAppEnabled('facebook')" class="col-4">
                                     <a target="_blank"
