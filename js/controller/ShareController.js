@@ -177,23 +177,23 @@ app.controller('ShareController', function (ShareResource, Loading) {
         let result = 'https://www.facebook.com/sharer/sharer.php?u='+url+
             '&quote=' + intro.substring(0,100)+'...';
         if (categories && categories.length >= 1) {
-            result += '&hashtag=%23' + categories[0];
+            result += '&hashtag=%23' + categories[0].replace(' ', '');
         }
 
         return result;
     };
-    
+
     this.getTwitterUrl = function(url, intro, categories){
         let result = 'https://twitter.com/intent/tweet?url='+url+'&text=' +
             '\n' + intro.substring(0,100) + '...';
         if (categories) {
-            result += '&hashtags=' + categories.join(',');
+            result += '&hashtags=' + categories.replace(' ', '').join(',');
         }
 
         return result;
-    }; 
+    };
 
     this.getEmailUrl = function(url, object, body, intro){
-        return encodeURI('mailto:?subject=' + object + '&body='+intro+'...\n'+ body + '\n' + url); 
+        return encodeURI('mailto:?subject=' + object + '&body='+intro+'...\n'+ body + '\n' + url);
     };
 });
