@@ -186,6 +186,8 @@ app.controller('ShareController', function (ShareResource, Loading) {
     };
 
     this.getTwitterUrl = function(url, intro){
+        // for chaque hashtag qu'on a coché
+        // text += [hashtag];
         return `https://twitter.com/intent/tweet?url=${url}&text=${intro.substring(0,this.twitterLimit)}`+
                 `...`;
     };
@@ -196,9 +198,35 @@ app.controller('ShareController', function (ShareResource, Loading) {
 
     /** List of custom hashtags */
     this.customHashtagsList = [
-        '#unistra',
-        '#es',
-        '#dnconsultants',
-        '#projetmaster'
+        { hashtag: '#unistra', value: false },
+        { hashtag: '#es', value: false },
+        { hashtag: '#dnconsultants', value: false },
+        { hashtag: '#projetmaster', value: false },
     ];
+
+    this.getCustomHashtags = function() {
+        return this.customHashtagsList.map(x => x.hashtag);
+    };
+
+    this.toggleHashtag = function(selectedHashtag) {
+        let hashtag = this.customHashtagsList.find(
+            h => h.hashtag === selectedHashtag
+        );
+
+        if (hashtag) {
+            hashtag.value = !hashtag.value;
+        }
+    };
+
+    this.getHashtagValue = function(selectedHashtag) {
+        let hashtag = this.customHashtagsList.find(
+            h => h.hashtag === selectedHashtag
+        );
+
+        if (hashtag) {
+            return hashtag.value;
+        }
+
+        return false;
+    };
 });

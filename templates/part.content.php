@@ -158,8 +158,12 @@
                             <!-- Hashtags -->
                             <div class="default-hashtags">
                                 <ul>
-                                    <li ng-repeat="hashtag in Share.customHashtagsList"> 
-                                        <input type="checkbox" id="{{ hashtag }}">
+                                    <li ng-repeat="hashtag in Share.getCustomHashtags()"> 
+                                        <input
+                                            type="checkbox"
+                                            id="{{ hashtag }}"
+                                            ng-checked="Share.getHashtagValue(hashtag)"
+                                            ng-click="Share.toggleHashtag(hashtag)">
                                         <label for="{{ hashtag }}">{{ hashtag }}</label>
                                     </li>
                                 </ul>
