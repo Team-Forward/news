@@ -77,7 +77,8 @@ class AdminControllerTest extends TestCase
             'feedFetcherTimeout' => 4,
             'useCronUpdates' => false,
             'exploreUrl' => 'test',
-            'updateInterval' => 3601
+            'updateInterval' => 3601,
+            'customHashtags' => '["#testing"]'
         ];
         $map = [
             ['news','autoPurgeMinimumInterval', 60, 1],
@@ -86,7 +87,8 @@ class AdminControllerTest extends TestCase
             ['news','feedFetcherTimeout', 60, 4],
             ['news','useCronUpdates', true, false,],
             ['news','exploreUrl', '', 'test'],
-            ['news','updateInterval', 3600, 3601]
+            ['news','updateInterval', 3600, 3601],
+            ['news','customHashtags', '', '["#testing"]']
         ];
         $this->config->expects($this->exactly(count($map)))
             ->method('getAppValue')
@@ -112,7 +114,8 @@ class AdminControllerTest extends TestCase
             'feedFetcherTimeout' => 4,
             'useCronUpdates' => false,
             'exploreUrl' => 'test',
-            'updateInterval' => 3601
+            'updateInterval' => 3601,
+            'customHashtags' => '["#testing"]'
         ];
 
         $this->config->expects($this->exactly(count($expected)))
@@ -124,7 +127,8 @@ class AdminControllerTest extends TestCase
                 ['news','feedFetcherTimeout', 4],
                 ['news','useCronUpdates', false],
                 ['news','exploreUrl', 'test'],
-                ['news','updateInterval', 3601]
+                ['news','updateInterval', 3601],
+                ['news', 'customHashtags', '["#testing"]']
             );
 
         $map = [
@@ -134,7 +138,8 @@ class AdminControllerTest extends TestCase
             ['news','feedFetcherTimeout', 60, 4],
             ['news','useCronUpdates', true, false,],
             ['news','exploreUrl', '', 'test'],
-            ['news','updateInterval', 3600, 3601]
+            ['news','updateInterval', 3600, 3601],
+            ['news', 'customHashtags', '', '["#testing"]']
         ];
         $this->config->expects($this->exactly(count($map)))
             ->method('getAppValue')
@@ -147,7 +152,8 @@ class AdminControllerTest extends TestCase
             $expected['feedFetcherTimeout'],
             $expected['useCronUpdates'],
             $expected['exploreUrl'],
-            $expected['updateInterval']
+            $expected['updateInterval'],
+            $expected['customHashtags']
         );
 
         $this->assertEquals($expected, $response);
