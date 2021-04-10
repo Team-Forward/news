@@ -157,22 +157,10 @@
                             <p class="label-group"> <?php p($l->t('Share on social media')) ?> </p>
                             <!-- Hashtags -->
                             <div class="default-hashtags">
-                                <ul>    
-                                    <li>
-                                        <input type="checkbox" id="unistra">
-                                        <label for="unistra">#unistra</label>
-                                    </li>
-                                    <li>
-                                        <input type="checkbox" id="es">
-                                        <label for="es">#es</label>
-                                    </li>
-                                    <li>
-                                        <input type="checkbox" id="dnconsultants">
-                                        <label for="dnconsultants">#dnconsultants</label>
-                                    </li>
-                                    <li>
-                                        <input type="checkbox" id="projetmaster">
-                                        <label for="projetmaster">#projetmaster</label>
+                                <ul>
+                                    <li ng-repeat="hashtag in Share.customHashtagsList"> 
+                                        <input type="checkbox" id="{{ hashtag }}">
+                                        <label for="{{ hashtag }}">{{ hashtag }}</label>
                                     </li>
                                 </ul>
                             </div>

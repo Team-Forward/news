@@ -8,6 +8,8 @@
  * @author Nicolas Wendling <nicolas.wendling1011@gmail.com>
  * @author Jimmy Huynh <natorisaki@gmail.com>
  * @author Aurélien David <dav.aurelien@gmail.com>
+ * @author Hamza Elhaddad <>
+ * @author Ilyes Chergui Malih <>
  */
 app.controller('ShareController', function (ShareResource, Loading) {
     'use strict';
@@ -191,4 +193,12 @@ app.controller('ShareController', function (ShareResource, Loading) {
     this.getEmailUrl = function(url, object, intro){
         return encodeURI(`mailto:?subject=${object}&body=${intro.substring(0,this.emailLimit)}...\n\n${url}`);
     };
+
+    /** List of custom hashtags */
+    this.customHashtagsList = [
+        '#unistra',
+        '#es',
+        '#dnconsultants',
+        '#projetmaster'
+    ];
 });
