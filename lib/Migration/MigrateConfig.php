@@ -55,7 +55,6 @@ class MigrateConfig implements IRepairStep
             'exploreUrl'               => '',
             'updateInterval'           => 3600,
             'defaultFeeds'             => '',
-            'customHashtags'           => '',
         ];
     }
 
