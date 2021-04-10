@@ -68,6 +68,7 @@ class Application extends App implements IBootstrap
         'exploreUrl'               => '',
         'updateInterval'           => 3600,
         'defaultFeeds'             => '',
+        'customHashtags'           => '',
     ];
 
     public function __construct(array $urlParams = [])
