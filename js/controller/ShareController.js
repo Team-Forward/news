@@ -180,20 +180,26 @@ app.controller('ShareController', function (ShareResource, Loading, SettingsReso
         return media.some(m => this.isSocialAppEnabled(m));
     };
 
-    this.getFacebookUrl = function(url, intro){
-        return `https://www.facebook.com/sharer/sharer.php?u=${url}&quote=${intro.substring(0,this.facebookLimit)}`+
-                `...`;
+    this.getFacebookUrl = function(url, intro) {
+        let text = encodeURIComponent(this.generateShareText(intro));
+        return `https://www.facebook.com/sharer/sharer.php?u=${url}&quote=${text}...`;
     };
 
-    this.getTwitterUrl = function(url, intro){
-        // for chaque hashtag qu'on a coché
-        // text += [hashtag];
-        return `https://twitter.com/intent/tweet?url=${url}&text=${intro.substring(0,this.twitterLimit)}`+
-                `...`;
+    this.getTwitterUrl = function(url, intro) {
+        let text = encodeURIComponent(this.generateShareText(intro));
+        return `https://twitter.com/intent/tweet?url=${url}&text=${text}...`;
     };
 
-    this.getEmailUrl = function(url, object, intro){
-        return encodeURI(`mailto:?subject=${object}&body=${intro.substring(0,this.emailLimit)}...\n\n${url}`);
+    this.getEmailUrl = function(url, object, intro) {
+        let text = this.generateShareText(intro);
+        return encodeURI(`mailto:?subject=${object}&body=${text}...\n\n${url}`);
+    };
+
+    this.generateShareText = function(intro) {
+        let hashtags = this.customHashtagsList.filter(h => h.value).map(h => `[${h.hashtag}]`).join('');
+        let excerpt = intro.substring(0, this.twitterLimit);
+
+        return hashtags + ' ' + excerpt;
     };
 
     /** List of custom hashtags */
