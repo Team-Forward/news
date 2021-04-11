@@ -156,9 +156,9 @@
                         <div ng-if="Share.isAnySocialAppEnabled()">
                             <p class="label-group"> <?php p($l->t('Share on social media')) ?> </p>
                             <!-- Hashtags -->
-                            <div class="default-hashtags">
+                            <div ng-if="Share.getCustomHashtags().length > 0" class="default-hashtags">
                                 <ul>
-                                    <li ng-repeat="hashtag in Share.getCustomHashtags()"> 
+                                    <li ng-repeat="hashtag in Share.getCustomHashtags()">
                                         <input
                                             type="checkbox"
                                             id="{{ hashtag }}"
