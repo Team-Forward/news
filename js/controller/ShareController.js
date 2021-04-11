@@ -213,20 +213,14 @@ app.controller('ShareController', function (ShareResource, Loading, SettingsReso
     };
 
     this.toggleHashtag = function(selectedHashtag) {
-        let hashtag = this.customHashtagsList.find(
-            h => h.hashtag === selectedHashtag
-        );
-
+        let hashtag = this.customHashtagsList.find(h => h.hashtag === selectedHashtag);
         if (hashtag) {
             hashtag.value = !hashtag.value;
         }
     };
 
     this.getHashtagValue = function(selectedHashtag) {
-        let hashtag = this.customHashtagsList.find(
-            h => h.hashtag === selectedHashtag
-        );
-
+        let hashtag = this.customHashtagsList.find(h => h.hashtag === selectedHashtag);
         if (hashtag) {
             return hashtag.value;
         }
