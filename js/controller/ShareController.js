@@ -11,7 +11,7 @@
  * @author Hamza Elhaddad <elhaddadhamza49@gmail.com>
  * @author Ilyes Chergui Malih <ilyes.chergui.malih@outlook.fr>
  */
-app.controller('ShareController', function (ShareResource, Loading) {
+app.controller('ShareController', function (ShareResource, Loading, SettingsResource) {
     'use strict';
 
     /** Array containing users to share an item with */
@@ -197,14 +197,18 @@ app.controller('ShareController', function (ShareResource, Loading) {
     };
 
     /** List of custom hashtags */
-    this.customHashtagsList = [
-        { hashtag: '#unistra', value: false },
-        { hashtag: '#es', value: false },
-        { hashtag: '#dnconsultants', value: false },
-        { hashtag: '#projetmaster', value: false },
-    ];
+    this.customHashtagsList = [];
+    /** Avoid fetching & mapping hashtags each time */
+    this.fetchedHashtags = false;
 
     this.getCustomHashtags = function() {
+        if (!this.fetchedHashtags) {
+            let hashtags = JSON.parse(SettingsResource.get('customHashtags'));
+            this.customHashtagsList = hashtags.map(h => {
+                return { hashtag: h, value: false };
+            });
+            this.fetchedHashtags = true;
+        }
         return this.customHashtagsList.map(x => x.hashtag);
     };
 
