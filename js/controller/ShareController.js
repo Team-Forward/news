@@ -8,8 +8,8 @@
  * @author Nicolas Wendling <nicolas.wendling1011@gmail.com>
  * @author Jimmy Huynh <natorisaki@gmail.com>
  * @author Aurélien David <dav.aurelien@gmail.com>
- * @author Hamza Elhaddad <>
- * @author Ilyes Chergui Malih <>
+ * @author Hamza Elhaddad <elhaddadhamza49@gmail.com>
+ * @author Ilyes Chergui Malih <ilyes.chergui.malih@outlook.fr>
  */
 app.controller('ShareController', function (ShareResource, Loading) {
     'use strict';
