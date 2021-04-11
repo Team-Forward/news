@@ -137,22 +137,37 @@ style('news', 'admin');
             <em>
             <?php p($l->t('Description feeds')); ?></em>
         </p>
-        <p><input type="text" name="news-feed-fetcher-timeout"
-               value="<?php p($_['urlFlux']); ?>">
+        <p><input type="text" 
+                name="urlFlux"
+                id="urlFlux"
+            >
            <button
+                id="addFeed"
                 class="icon-add"
-                data-apps-slide-toggle="#new-folder"
-                news-focus="#new-folder [name='folderName']"
                 style="padding-top: 1.3em;">
             </button>
         </p>
-        <ul class="with-icon" data-id="0" style="margin-left: 0.5em; margin-top: 1em;display:flex; flex-direction: column; list-style:disc" news-droppable>
+        <!-- <input id="bricolage" style="display:none;" value="<?php p($_['defautFeeds']) ?>" /> -->
+        <?php var_dump($_['defaultFeeds']); ?>
+
+
+        <?php if (!empty($_['defaultFeeds'])) { ?>
+        <ul
+            name="news-feed-list-rss"
+            class="with-icon"
+            data-id="0"
+            style="margin-left: 0.5em; margin-top: 1em;display:flex; flex-direction: column; list-style:disc"
+            news-droppable>
             <!-- the li is repeated the following is an example -->
-            <li style="display: inline-flex; margin-top: 0.7em">
+            <?php foreach (explode(',', $_['defaultFeeds']) as $defaultFeed) { ?>
+            <li 
+                style="display: inline-flex; margin-top: 0.7em">
                 <a style="padding-top: 0.25em"
                     class="title"
-                    href="https://google.fr">
-                        Nextcloud News
+                    href="https://google.fr"
+                    name="news-feed-element-rss"
+                >
+                    <?php echo($defaultFeed); ?>
                 </a>
                 <div style="margin-left: 1em">
                     <ul>
@@ -160,29 +175,14 @@ style('news', 'admin');
                             <button
                                 class="icon-delete"
                                 style="padding-top: 1.3em;">
-                            </button>           
+                            </button>
                         </li>
                     </ul>
                 </div>
             </li>
-            <li style="display: inline-flex; margin-top: 0.7em">
-                <a style="padding-top: 0.25em"
-                    class="title"
-                    href="https://google.fr">
-                        Google RSS
-                </a>
-                <div style="margin-left: 1em">
-                    <ul>
-                        <li >
-                            <button
-                                class="icon-delete"
-                                style="padding-top: 1.3em;">
-                            </button>           
-                        </li>
-                    </ul>
-                </div>
-            </li>
+            <?php } ?>
         </ul>
+        <?php } ?>
     </div>
     <div id="news-saved-message">
         <span class="msg success"><?php p($l->t('Saved')); ?></span>

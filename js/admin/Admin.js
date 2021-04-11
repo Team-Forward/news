@@ -15,6 +15,9 @@
     'use strict';
 
     $(document).ready(function () {
+
+        var listFeeds = [];
+
         var useCronUpdatesInput =
             $('#news input[name="news-use-cron-updates"]');
         var autoPurgeMinimumIntervalInput =
@@ -32,6 +35,21 @@
         var updateIntervalInput =
             $('#news input[name="news-update-interval"]');
         var savedMessage = $('#news-saved-message');
+
+
+        var listRss = $('#news a[name="news-feed-element-rss"]')
+        listRss.each(function(index, objRss) {
+            console.log('====', objRss.innerText);
+            listFeeds.push(objRss.innerText);
+        });
+
+        // var listRss = $('#bricolage').val();
+        // console.log('====', listRss);
+        // listRss = JSON.parse(listRss);
+        // listRss.each(function(index, objRss) {
+        //     listFeeds.push(objRss);
+        // });
+
 
         var saved = function () {
             if (savedMessage.is(':visible')) {
@@ -64,7 +82,8 @@
                 maxSize: parseInt(maxSize, 10),
                 useCronUpdates: useCronUpdates,
                 exploreUrl: exploreUrl,
-                updateInterval: parseInt(updateInterval, 10)
+                updateInterval: parseInt(updateInterval, 10),
+                defaultFeeds: JSON.stringify(listFeeds)
             };
 
             var url = OC.generateUrl('/apps/news/admin');
@@ -90,7 +109,13 @@
 
         };
 
-        $('#news input[type="text"]').blur(submit);
+        $( "#addFeed" ).click(function() {
+            var urlFlux = $("#urlFlux").val();
+            listFeeds.push(urlFlux);
+            submit();
+        });
+
+        $('#news input[type="text"][name!="urlFlux"]').blur(submit);
         $('#news input[type="checkbox"]').change(submit);
         $('#news-migrate').click(function () {
             var button = $(this);
