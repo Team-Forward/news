@@ -18,6 +18,7 @@ use OCA\News\Db\Folder;
 use OCA\News\Db\FolderMapperV2;
 use OCA\News\Service\Exceptions\ServiceConflictException;
 use OCA\News\Service\Exceptions\ServiceNotFoundException;
+use OCP\AppFramework\Db\DoesNotExistException;
 use OCP\AppFramework\Db\Entity;
 use Psr\Log\LoggerInterface;
 
@@ -194,5 +195,22 @@ class FolderServiceV2 extends Service
         $folder = $this->find($userId, $id);
 
         $this->mapper->read($userId, $folder->getId(), $maxItemID);
+    }
+
+    /**
+     * Find folder by name for user
+     *
+     * @param string $userId The user identifier
+     * @param array  $name   Name of the folder
+     *
+     * @return Folder|null
+     */
+    public function findFromUserByName(string $userId, string $name): ?Folder
+    {
+        try {
+            return $this->mapper->findFromUserByName($userId, $name);
+        } catch(DoesNotExistException $e) {
+            return null;
+        }
     }
 }

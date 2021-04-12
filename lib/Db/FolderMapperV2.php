@@ -121,4 +121,26 @@ class FolderMapperV2 extends NewsMapperV2
 
         $this->db->executeUpdate($builder->getSQL());
     }
+
+    /**
+     * Find folder by name for user
+     *
+     * @param string $userId The user identifier
+     * @param array  $name   Name of the folder
+     *
+     * @return Folder|null
+     */
+    public function findFromUserByName(string $userId, string $name): ?Folder
+    {
+        $builder = $this->db->getQueryBuilder();
+        $builder->select('*')
+                ->from($this->tableName)
+                ->where('user_id = :user_id')
+                ->andWhere('name = :name')
+                ->andWhere('deleted_at = 0')
+                ->setParameter('user_id', $userId)
+                ->setParameter('name', $name);
+
+        return $this->findEntity($builder);
+    }
 }
