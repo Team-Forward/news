@@ -139,6 +139,66 @@ class UserLoggedInListenerTest extends TestCase
         $this->class->handle($event);
     }
 
+    public function testHandleCreatesOwnFolder()
+    {
+        $userId = 'nicolas';
+        $defaultFeeds = json_encode(['url 1', 'url 2']);
+        $folderName = 'Recommended feeds';
+        $folder = new Folder();
+        $folder->setId(1);
+        $existingFeed = new Feed();
+
+        $user = $this->getMockBuilder(IUser::class)
+            ->getMock();
+
+        $event = $this->getMockBuilder(UserLoggedInEvent::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $event->expects($this->once())
+            ->method('getUser')
+            ->will($this->returnValue($user));
+
+        $user->expects($this->once())
+            ->method('getUID')
+            ->will($this->returnValue($userId));
+
+        $this->settings->expects($this->once())
+            ->method('getAppValue')
+            ->with(Application::NAME,
+                'defaultFeeds',
+                Application::DEFAULT_SETTINGS['defaultFeeds']
+            )
+            ->will($this->returnValue($defaultFeeds));
+
+        $this->l10n->expects($this->once())
+            ->method('t')
+            ->with($folderName)
+            ->will($this->returnValue($folderName));
+
+        $this->folderService->expects($this->once())
+            ->method('findFromUserByName')
+            ->with($userId, $folderName)
+            ->will($this->returnValue(null));
+
+        $this->folderService->expects($this->once())
+            ->method('create')
+            ->with($userId, $folderName)
+            ->will($this->returnValue($folder));
+
+        $this->feedService->expects($this->exactly(2))
+            ->method('existsForUser')
+            ->withConsecutive([$userId, 'url 1'], [$userId, 'url 2'])
+            ->willReturnOnConsecutiveCalls(false, true);
+
+        $this->feedService->expects($this->once())
+            ->method('create')
+            ->with($userId, 'url 1', 1);
+
+
+        $this->class->handle($event);
+    }
+
     public function testAddFeed()
     {
         $feed = new Feed();
