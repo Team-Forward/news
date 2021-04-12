@@ -197,9 +197,12 @@ app.controller('ShareController', function (ShareResource, Loading, SettingsReso
 
     this.generateShareText = function(intro) {
         let hashtags = this.customHashtagsList.filter(h => h.value).map(h => `[${h.hashtag}]`).join('');
+        if (hashtags !== '') {
+            hashtags += ' ';
+        }
         let excerpt = intro.substring(0, this.twitterLimit);
 
-        return hashtags + ' ' + excerpt;
+        return hashtags + excerpt;
     };
 
     /** List of custom hashtags */
@@ -232,5 +235,21 @@ app.controller('ShareController', function (ShareResource, Loading, SettingsReso
         }
 
         return false;
+    };
+
+    /** Indicates whether the custom hashtag selector is visible */
+    this.isCustomHashtagsVisible = false;
+
+    this.customHashtagsVisible = function() {
+        return this.isCustomHashtagsVisible;
+    };
+
+    this.toggleCustomHashtags = function() {
+        this.isCustomHashtagsVisible = !this.isCustomHashtagsVisible;
+        if (!this.isCustomHashtagsVisible) {
+            this.customHashtagsList.forEach(h => {
+                h.value = false;
+            });
+        }
     };
 });
