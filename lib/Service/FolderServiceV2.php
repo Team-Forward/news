@@ -209,7 +209,7 @@ class FolderServiceV2 extends Service
     {
         try {
             return $this->mapper->findFromUserByName($userId, $name);
-        } catch(DoesNotExistException $e) {
+        } catch (DoesNotExistException $e) {
             return null;
         }
     }
