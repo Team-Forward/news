@@ -137,7 +137,7 @@ style('news', 'admin');
             <em>
             <?php p($l->t('Hashtags can be automatically merged with your post for social network.')); ?></em>
         </p>
-        <p><input type="text" 
+        <p><input type="text"
                 name="hashtag"
                 id="hashtag"
             >
@@ -150,34 +150,30 @@ style('news', 'admin');
         <?php if (!empty($_['customHashtags'])) { ?>
         <ul
             name="news-feed-list-hashtag"
+            id="hashtags"
             class="with-icon"
             data-id="0"
             style="margin-left: 0.5em; margin-top: 1em;display:flex; flex-direction: column; list-style:disc"
             news-droppable>
             <!-- the li is repeated the following is an example -->
-            <?php foreach (explode(',', $_['customHashtags']) as $defaultHashtag) { 
+            <?php foreach (explode(',', $_['customHashtags']) as $defaultHashtag) {
                 $defaultHashtag = str_replace('"', '', $defaultHashtag);
                 $defaultHashtag = str_replace('[', '', $defaultHashtag);
                 $defaultHashtag = str_replace(']', '', $defaultHashtag);
             ?>
-            <li 
+            <li
                 style="display: inline-flex; margin-top: 0.7em">
                 <a style="padding-top: 0.25em"
                     class="title"
-                    href="https://google.fr"
                     name="news-feed-element-hashtag"
                 >
                     <?php echo($defaultHashtag); ?>
                 </a>
                 <div style="margin-left: 1em">
-                    <ul>
-                        <li >
-                            <button
-                                class="icon-delete"
-                                style="padding-top: 1.3em;">
-                            </button>
-                        </li>
-                    </ul>
+                    <button
+                        class="icon-delete deleteHashtag"
+                        style="padding-top: 1.3em;">
+                    </button>
                 </div>
             </li>
             <?php } ?>

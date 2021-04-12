@@ -113,6 +113,18 @@
             submit();
         });
 
+        $( 'button.deleteHashtag' ).click(function() {
+            var index = $(this).parents("li").index();
+            listHashtags_result.splice(index, 1);
+
+            if(listHashtags_result.length===0)
+            {
+
+                listHashtags_result=[];
+            }
+            submit();
+        });
+
         $('#news input[type="text"]').blur(submit);
         $('#news input[type="checkbox"]').change(submit);
         $('#news-migrate').click(function () {
