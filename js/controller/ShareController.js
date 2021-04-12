@@ -236,4 +236,20 @@ app.controller('ShareController', function (ShareResource, Loading, SettingsReso
 
         return false;
     };
+
+    /** Indicates whether the custom hashtag selector is visible */
+    this.isCustomHashtagsVisible = false;
+
+    this.customHashtagsVisible = function() {
+        return this.isCustomHashtagsVisible;
+    };
+
+    this.toggleCustomHashtags = function() {
+        this.isCustomHashtagsVisible = !this.isCustomHashtagsVisible;
+        if (!this.isCustomHashtagsVisible) {
+            this.customHashtagsList.forEach(h => {
+                h.value = false;
+            });
+        }
+    };
 });
