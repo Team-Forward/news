@@ -17,6 +17,7 @@
     $(document).ready(function () {
 
         var listFeeds = [];
+        var listHashtags_result = [];
 
         var useCronUpdatesInput =
             $('#news input[name="news-use-cron-updates"]');
@@ -41,6 +42,12 @@
         listRss.each(function(index, objRss) {
             console.log('====', objRss.innerText);
             listFeeds.push(objRss.innerText);
+        });
+
+        var listHashtags = $('#news a[name="news-feed-element-hashtag"]')
+        listHashtags.each(function(index, objRss) {
+            console.log('====', objHash.innerText);
+            listHashtags_result.push(objHash.innerText);
         });
 
         // var listRss = $('#bricolage').val();
@@ -83,7 +90,8 @@
                 useCronUpdates: useCronUpdates,
                 exploreUrl: exploreUrl,
                 updateInterval: parseInt(updateInterval, 10),
-                defaultFeeds: JSON.stringify(listFeeds)
+                defaultFeeds: JSON.stringify(listFeeds),
+                defaultHashtags: JSON.stringify(listHashtags_result)
             };
 
             var url = OC.generateUrl('/apps/news/admin');
@@ -114,6 +122,13 @@
             listFeeds.push(urlFlux);
             submit();
         });
+
+        $( "#addHashtag" ).click(function() {
+            var hashtagVal = $("#hashtag").val();
+            listHashtags_result.push(hashtagVal);
+            submit();
+        });
+
 
         $('#news input[type="text"][name!="urlFlux"]').blur(submit);
         $('#news input[type="checkbox"]').change(submit);

@@ -90,6 +90,7 @@ class AdminController extends Controller
      * @param string $exploreUrl               URL to use for the explore feed
      * @param int    $updateInterval           Interval in which the feeds will be updated
      * @param string $defaultFeeds             Feed urls that users are subscribed to by default
+     * @param string $defaultHashtags          Hashtags that will be suggested to the post for social network
      *
      * @return array with the updated values
      */
@@ -101,7 +102,8 @@ class AdminController extends Controller
         bool $useCronUpdates,
         string $exploreUrl,
         int $updateInterval,
-        string $defaultFeeds
+        string $defaultFeeds,
+        string $defaultHashtags
     ): array {
         $this->config->setAppValue($this->appName, 'autoPurgeMinimumInterval', $autoPurgeMinimumInterval);
         $this->config->setAppValue($this->appName, 'autoPurgeCount', $autoPurgeCount);
@@ -112,6 +114,7 @@ class AdminController extends Controller
         $this->config->setAppValue($this->appName, 'updateInterval', $updateInterval);
         // TODO: check if json_encode ou decode
         $this->config->setAppValue($this->appName, 'defaultFeeds', $defaultFeeds);
+        $this->config->setAppValue($this->appName, 'defaultHashtags', $defaultHashtags);
 
         return $this->getData();
     }

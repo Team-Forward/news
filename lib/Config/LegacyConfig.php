@@ -35,6 +35,7 @@ class LegacyConfig
     public $updateInterval;
     public $defaultFeeds;  // json array containing feed urls
                            // that users will be subscribed to by default
+    public $defaultHashtags;
 
     public function __construct(
         ?Folder $fileSystem,
@@ -52,6 +53,7 @@ class LegacyConfig
         $this->exploreUrl = '';
         $this->updateInterval = 3600;
         $this->defaultFeeds = '';
+        $this->defaultHashtags = '';
     }
 
     /**
