@@ -100,7 +100,7 @@ class UserLoggedInListener implements IEventListener
      *
      * @return void
      */
-    protected function addFeed(string $userId, string $url, int $folderId): void
+    public function addFeed(string $userId, string $url, int $folderId): void
     {
         try {
             $feed = $this->feedService->create(
