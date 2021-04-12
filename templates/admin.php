@@ -127,6 +127,60 @@ style('news', 'admin');
         <p><input type="text" name="news-update-interval"
                value="<?php p($_['updateInterval']); ?>"></p>
     </div>
+    <div class="form-line">
+        <p>
+            <label for="news-feed-fetcher-timeout">
+                <?php p($l->t('Default hashtags')); ?>
+            </label>
+        </p>
+        <p>
+            <em>
+            <?php p($l->t('Hashtags can be automatically merged with your post for social network.')); ?></em>
+        </p>
+        <p><input type="text" 
+                name="hashtag"
+                id="hashtag"
+            >
+           <button
+                id="addHashtag"
+                class="icon-add"
+                style="padding-top: 1.3em;">
+            </button>
+        </p>
+        <?php if (!empty($_['customHashtags'])) { 
+            var_dump('customHashtags');?>
+        <ul
+            name="news-feed-list-hashtag"
+            class="with-icon"
+            data-id="0"
+            style="margin-left: 0.5em; margin-top: 1em;display:flex; flex-direction: column; list-style:disc"
+            news-droppable>
+            <!-- the li is repeated the following is an example -->
+            <?php foreach (explode(',', $_['customHashtags']) as $defaultHashtag) { ?>
+            <li 
+                style="display: inline-flex; margin-top: 0.7em">
+                <a style="padding-top: 0.25em"
+                    class="title"
+                    href="https://google.fr"
+                    name="news-feed-element-hashtag"
+                >
+                    <?php echo($defaultHashtag); ?>
+                </a>
+                <div style="margin-left: 1em">
+                    <ul>
+                        <li >
+                            <button
+                                class="icon-delete"
+                                style="padding-top: 1.3em;">
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+            <?php } ?>
+        </ul>
+        <?php } ?>
+    </div>
     <div id="news-saved-message">
         <span class="msg success"><?php p($l->t('Saved')); ?></span>
     </div>
