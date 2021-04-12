@@ -15,6 +15,9 @@
     'use strict';
 
     $(document).ready(function () {
+
+        var listHashtags_result = [];
+
         var useCronUpdatesInput =
             $('#news input[name="news-use-cron-updates"]');
         var autoPurgeMinimumIntervalInput =
@@ -32,6 +35,14 @@
         var updateIntervalInput =
             $('#news input[name="news-update-interval"]');
         var savedMessage = $('#news-saved-message');
+
+
+        var listHashtags = $('#news a[name="news-feed-element-hashtag"]')
+        listHashtags.each(function(index, objHash) {
+            console.log('====', objHash.innerText.replace(/['"]+/g, '').replace(/\\/g, '').replace(/[\[\]']+/g,''));
+            listHashtags_result.push(objHash.innerText.replace(/['"]+/g, '').replace(/\\/g, '').replace(/[\[\]']+/g,''));
+        });
+
 
         var saved = function () {
             if (savedMessage.is(':visible')) {
@@ -55,6 +66,11 @@
             var updateInterval = updateIntervalInput.val()
             var useCronUpdates = useCronUpdatesInput.is(':checked');
 
+            // if (Array.isArray(listHashtags_result))
+            // {
+            //     listHashtags_result = JSON.stringify(listHashtags_result);
+            // }
+
             var data = {
                 autoPurgeMinimumInterval:
                     parseInt(autoPurgeMinimumInterval, 10),
@@ -64,7 +80,8 @@
                 maxSize: parseInt(maxSize, 10),
                 useCronUpdates: useCronUpdates,
                 exploreUrl: exploreUrl,
-                updateInterval: parseInt(updateInterval, 10)
+                updateInterval: parseInt(updateInterval, 10),
+                customHashtags: JSON.stringify(listHashtags_result)
             };
 
             var url = OC.generateUrl('/apps/news/admin');
@@ -89,6 +106,12 @@
             });
 
         };
+
+        $( "#addHashtag" ).click(function() {
+            var hashtagVal = $("#hashtag").val();
+            listHashtags_result.push(hashtagVal);
+            submit();
+        });
 
         $('#news input[type="text"]').blur(submit);
         $('#news input[type="checkbox"]').change(submit);
