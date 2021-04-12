@@ -39,8 +39,8 @@
 
         var listHashtags = $('#news a[name="news-feed-element-hashtag"]')
         listHashtags.each(function(index, objHash) {
-            console.log('====', objHash.innerText);
-            listHashtags_result.push(objHash.innerText);
+            console.log('====', objHash.innerText.replace(/['"]+/g, '').replace(/\\/g, '').replace(/[\[\]']+/g,''));
+            listHashtags_result.push(objHash.innerText.replace(/['"]+/g, '').replace(/\\/g, '').replace(/[\[\]']+/g,''));
         });
 
 
@@ -66,10 +66,10 @@
             var updateInterval = updateIntervalInput.val()
             var useCronUpdates = useCronUpdatesInput.is(':checked');
 
-            if (Array.isArray(listHashtags_result))
-            {
-                listHashtags_result = JSON.stringify(listHashtags_result);
-            }
+            // if (Array.isArray(listHashtags_result))
+            // {
+            //     listHashtags_result = JSON.stringify(listHashtags_result);
+            // }
 
             var data = {
                 autoPurgeMinimumInterval:
@@ -81,7 +81,7 @@
                 useCronUpdates: useCronUpdates,
                 exploreUrl: exploreUrl,
                 updateInterval: parseInt(updateInterval, 10),
-                customHashtags: listHashtags_result
+                customHashtags: JSON.stringify(listHashtags_result)
             };
 
             var url = OC.generateUrl('/apps/news/admin');
