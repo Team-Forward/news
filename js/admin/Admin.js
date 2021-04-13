@@ -91,7 +91,7 @@
                 contentType: 'application/json; charset=utf-8',
                 url: url,
                 data: JSON.stringify(data),
-                dataType: 'json'
+                dataType: 'json',
             }).then(function (data) {
                 saved();
                 autoPurgeMinimumIntervalInput
@@ -103,9 +103,12 @@
                 useCronUpdatesInput.prop('checked', data.useCronUpdates);
                 exploreUrlInput.val(data.exploreUrl);
                 updateIntervalInput.val(data.updateInterval);
-            });
+                $(" #listHashtags").load(" #hashtags");
+                });
 
         };
+
+
 
         $( "#addHashtag" ).click(function() {
             var hashtagVal = $("#hashtag").val();
@@ -113,7 +116,7 @@
             submit();
         });
 
-        $( 'button.deleteHashtag' ).click(function() {
+        $(document).on('click',' .deleteHashtag',function(){
             var index = $(this).parents("li").index();
             listHashtags_result.splice(index, 1);
 

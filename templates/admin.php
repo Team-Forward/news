@@ -147,38 +147,40 @@ style('news', 'admin');
                 style="padding-top: 1.3em;">
             </button>
         </p>
-        <?php if (!empty($_['customHashtags'])) { ?>
-        <ul
-            name="news-feed-list-hashtag"
-            id="hashtags"
-            class="with-icon"
-            data-id="0"
-            style="margin-left: 0.5em; margin-top: 1em;display:flex; flex-direction: column; list-style:disc"
-            news-droppable>
-            <!-- the li is repeated the following is an example -->
-            <?php foreach (explode(',', $_['customHashtags']) as $defaultHashtag) {
-                $defaultHashtag = str_replace('"', '', $defaultHashtag);
-                $defaultHashtag = str_replace('[', '', $defaultHashtag);
-                $defaultHashtag = str_replace(']', '', $defaultHashtag);
-            ?>
-            <li
-                style="display: inline-flex; margin-top: 0.7em">
-                <a style="padding-top: 0.25em"
-                    class="title"
-                    name="news-feed-element-hashtag"
-                >
-                    <?php echo($defaultHashtag); ?>
-                </a>
-                <div style="margin-left: 1em">
-                    <button
-                        class="icon-delete deleteHashtag"
-                        style="padding-top: 1.3em;">
-                    </button>
-                </div>
-            </li>
+        <div id="listHashtags">
+            <?php if (!empty($_['customHashtags'])) { ?>
+            <ul
+                name="news-feed-list-hashtag"
+                id="hashtags"
+                class="with-icon"
+                data-id="0"
+                style="margin-left: 0.5em; margin-top: 1em;display:flex; flex-direction: column; list-style:disc"
+                news-droppable>
+                <!-- the li is repeated the following is an example -->
+                <?php foreach (explode(',', $_['customHashtags']) as $defaultHashtag) {
+                    $defaultHashtag = str_replace('"', '', $defaultHashtag);
+                    $defaultHashtag = str_replace('[', '', $defaultHashtag);
+                    $defaultHashtag = str_replace(']', '', $defaultHashtag);
+                ?>
+                <li
+                    style="display: inline-flex; margin-top: 0.7em">
+                    <a style="padding-top: 0.25em"
+                        class="title"
+                        name="news-feed-element-hashtag"
+                    >
+                        <?php echo($defaultHashtag); ?>
+                    </a>
+                    <div style="margin-left: 1em">
+                        <button
+                            class="icon-delete deleteHashtag"
+                            style="padding-top: 1.3em;">
+                        </button>
+                    </div>
+                </li>
+                <?php } ?>
+            </ul>
             <?php } ?>
-        </ul>
-        <?php } ?>
+        </div>
     </div>
     <div id="news-saved-message">
         <span class="msg success"><?php p($l->t('Saved')); ?></span>
