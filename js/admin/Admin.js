@@ -81,7 +81,7 @@
                 useCronUpdates: useCronUpdates,
                 exploreUrl: exploreUrl,
                 updateInterval: parseInt(updateInterval, 10),
-                customHashtags: JSON.stringify(listHashtags_result)
+                customHashtags: listHashtags_result.length===0 ? "" : JSON.stringify(listHashtags_result)
             };
 
             var url = OC.generateUrl('/apps/news/admin');
@@ -119,12 +119,6 @@
         $(document).on('click',' .deleteHashtag',function(){
             var index = $(this).parents("li").index();
             listHashtags_result.splice(index, 1);
-
-            if(listHashtags_result.length===0)
-            {
-
-                listHashtags_result=[];
-            }
             submit();
         });
 
