@@ -137,14 +137,16 @@ style('news', 'admin');
             <em>
             <?php p($l->t('Hashtags can be automatically merged with your post for social network.')); ?></em>
         </p>
-        <p><input type="text"
+        <p>
+            <input type="text"
                 name="hashtag"
                 id="hashtag"
             >
            <button
                 id="addHashtag"
                 class="icon-add"
-                style="padding-top: 1.3em;">
+                style="padding-top: 1.3em;"
+                >
             </button>
         </p>
         <div id="listHashtags">

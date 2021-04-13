@@ -39,7 +39,6 @@
 
         var listHashtags = $('#news a[name="news-feed-element-hashtag"]')
         listHashtags.each(function(index, objHash) {
-            console.log('====', objHash.innerText.replace(/['"]+/g, '').replace(/\\/g, '').replace(/[\[\]']+/g,''));
             listHashtags_result.push(objHash.innerText.replace(/['"]+/g, '').replace(/\\/g, '').replace(/[\[\]']+/g,''));
         });
 
@@ -65,11 +64,6 @@
             var exploreUrl = exploreUrlInput.val();
             var updateInterval = updateIntervalInput.val()
             var useCronUpdates = useCronUpdatesInput.is(':checked');
-
-            // if (Array.isArray(listHashtags_result))
-            // {
-            //     listHashtags_result = JSON.stringify(listHashtags_result);
-            // }
 
             var data = {
                 autoPurgeMinimumInterval:
@@ -112,7 +106,10 @@
 
         $( "#addHashtag" ).click(function() {
             var hashtagVal = $("#hashtag").val();
-            listHashtags_result.push(hashtagVal);
+            if(hashtagVal!=""){
+                listHashtags_result.push(hashtagVal);
+                $("#hashtag").val("");
+            }
             submit();
         });
 
