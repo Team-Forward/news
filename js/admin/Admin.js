@@ -16,7 +16,7 @@
 
     $(document).ready(function () {
 
-        var listFeeds = [];
+        var listFeeds_result = [];
 
         var useCronUpdatesInput =
             $('#news input[name="news-use-cron-updates"]');
@@ -36,20 +36,10 @@
             $('#news input[name="news-update-interval"]');
         var savedMessage = $('#news-saved-message');
 
-
-        var listRss = $('#news a[name="news-feed-element-rss"]')
-        listRss.each(function(index, objRss) {
-            console.log('====', objRss.innerText);
-            listFeeds.push(objRss.innerText);
+        var listFeeds = $('#news a[name="news-feed-element-flux"]')
+        listFeeds.each(function(index, objFeed) {
+            listFeeds_result.push(objFeed.innerText.replace(/['"]+/g, '').replace(/\\/g, '').replace(/[\[\]']+/g,''));
         });
-
-        // var listRss = $('#bricolage').val();
-        // console.log('====', listRss);
-        // listRss = JSON.parse(listRss);
-        // listRss.each(function(index, objRss) {
-        //     listFeeds.push(objRss);
-        // });
-
 
         var saved = function () {
             if (savedMessage.is(':visible')) {
@@ -83,7 +73,7 @@
                 useCronUpdates: useCronUpdates,
                 exploreUrl: exploreUrl,
                 updateInterval: parseInt(updateInterval, 10),
-                defaultFeeds: JSON.stringify(listFeeds)
+                defaultFeeds: listFeeds_result.length===0 ? "" : JSON.stringify(listFeeds_result)
             };
 
             var url = OC.generateUrl('/apps/news/admin');
@@ -105,17 +95,27 @@
                 useCronUpdatesInput.prop('checked', data.useCronUpdates);
                 exploreUrlInput.val(data.exploreUrl);
                 updateIntervalInput.val(data.updateInterval);
+                $(" #listFeeds").load(" #feeds");
             });
 
         };
 
         $( "#addFeed" ).click(function() {
             var urlFlux = $("#urlFlux").val();
-            listFeeds.push(urlFlux);
+            if(urlFlux!=""){
+                listFeeds_result.push(urlFlux);
+                $("#urlFlux").val("");
+            }
             submit();
         });
 
-        $('#news input[type="text"][name!="urlFlux"]').blur(submit);
+        $(document).on('click',' .deleteFeed',function(){
+            var index = $(this).parents("li").index();
+            listFeeds_result.splice(index, 1);
+            submit();
+        });
+
+        $('#news input[type="text"]').blur(submit);
         $('#news input[type="checkbox"]').change(submit);
         $('#news-migrate').click(function () {
             var button = $(this);

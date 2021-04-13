@@ -137,7 +137,7 @@ style('news', 'admin');
             <em>
             <?php p($l->t('Description feeds')); ?></em>
         </p>
-        <p><input type="text" 
+        <p><input type="text"
                 name="urlFlux"
                 id="urlFlux"
             >
@@ -147,42 +147,41 @@ style('news', 'admin');
                 style="padding-top: 1.3em;">
             </button>
         </p>
-        <!-- <input id="bricolage" style="display:none;" value="<?php p($_['defautFeeds']) ?>" /> -->
-        <?php var_dump($_['defaultFeeds']); ?>
 
-
-        <?php if (!empty($_['defaultFeeds'])) { ?>
-        <ul
-            name="news-feed-list-rss"
-            class="with-icon"
-            data-id="0"
-            style="margin-left: 0.5em; margin-top: 1em;display:flex; flex-direction: column; list-style:disc"
-            news-droppable>
-            <!-- the li is repeated the following is an example -->
-            <?php foreach (explode(',', $_['defaultFeeds']) as $defaultFeed) { ?>
-            <li 
-                style="display: inline-flex; margin-top: 0.7em">
-                <a style="padding-top: 0.25em"
-                    class="title"
-                    href="https://google.fr"
-                    name="news-feed-element-rss"
-                >
-                    <?php echo($defaultFeed); ?>
-                </a>
-                <div style="margin-left: 1em">
-                    <ul>
-                        <li >
-                            <button
-                                class="icon-delete"
-                                style="padding-top: 1.3em;">
-                            </button>
-                        </li>
-                    </ul>
-                </div>
-            </li>
+        <div id="listFeeds">
+            <?php if (!empty($_['defaultFeeds'])) { ?>
+            <ul
+                name="news-feed-list-flux"
+                id="feeds"
+                class="with-icon"
+                data-id="0"
+                style="margin-left: 0.5em; margin-top: 1em;display:flex; flex-direction: column; list-style:disc"
+                news-droppable>
+                <!-- the li is repeated the following is an example -->
+                <?php foreach (explode(',', $_['defaultFeeds']) as $defaultFeed) {
+                    $defaultFeed = str_replace('"', '', $defaultFeed);
+                    $defaultFeed = str_replace('[', '', $defaultFeed);
+                    $defaultFeed = str_replace(']', '', $defaultFeed);
+                ?>
+                <li
+                    style="display: inline-flex; margin-top: 0.7em">
+                    <a style="padding-top: 0.25em"
+                        class="title"
+                        name="news-feed-element-flux"
+                    >
+                        <?php echo($defaultFeed); ?>
+                    </a>
+                    <div style="margin-left: 1em">
+                        <button
+                            class="icon-delete deleteFeed"
+                            style="padding-top: 1.3em;">
+                        </button>
+                    </div>
+                </li>
+                <?php } ?>
+            </ul>
             <?php } ?>
-        </ul>
-        <?php } ?>
+        </div>
     </div>
     <div id="news-saved-message">
         <span class="msg success"><?php p($l->t('Saved')); ?></span>
