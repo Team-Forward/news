@@ -130,17 +130,18 @@ style('news', 'admin');
     <div class="form-line">
         <p>
             <label for="news-feed-fetcher-timeout">
-                <?php p($l->t('Default hashtags')); ?>
+                <?php p($l->t('Custom hashtags')); ?>
             </label>
         </p>
         <p>
             <em>
-            <?php p($l->t('Hashtags can be automatically merged with your post for social network.')); ?></em>
+            <?php p($l->t('List of hashtags that a user can automatically include in their social media post.')); ?></em>
         </p>
         <p>
             <input type="text"
                 name="hashtag"
                 id="hashtag"
+                placeholder="<?php p($l->t('Enter a hashtag')); ?>"
             >
            <button
                 id="addHashtag"
