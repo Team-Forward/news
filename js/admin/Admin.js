@@ -105,7 +105,7 @@
 
 
         $( "#addHashtag" ).click(function() {
-            var hashtagVal = $("#hashtag").val();
+            var hashtagVal = "#"+$("#hashtag").val();
             if(hashtagVal!=""){
                 listHashtags_result.push(hashtagVal);
                 $("#hashtag").val("");
