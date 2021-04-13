@@ -196,9 +196,9 @@ app.controller('ShareController', function (ShareResource, Loading, SettingsReso
     };
 
     this.generateShareText = function(intro) {
-        let hashtags = this.customHashtagsList.filter(h => h.value).map(h => `[${h.hashtag}]`).join('');
+        let hashtags = this.customHashtagsList.filter(h => h.value).map(h => `${h.hashtag}`).join(' ');
         if (hashtags !== '') {
-            hashtags += ' ';
+            hashtags = '['+hashtags+'] ';
         }
         let excerpt = intro.substring(0, this.twitterLimit);
 
