@@ -165,8 +165,8 @@ style('news', 'admin');
                     $defaultHashtag = str_replace(']', '', $defaultHashtag);
                 ?>
                 <li
-                    style="display: inline-flex; margin-top: 0.7em">
-                    <a style="padding-top: 0.25em"
+                    style="display: inline-flex; margin-top: 0.7em;">
+                    <a style="padding-top: 0.25em; width: 110px; overflow-wrap: break-word"
                         class="title"
                         name="news-feed-element-hashtag"
                     >
