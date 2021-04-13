@@ -130,16 +130,17 @@ style('news', 'admin');
     <div class="form-line">
         <p>
             <label for="news-feed-fetcher-timeout">
-                <?php p($l->t('URL feeds')); ?>
+                <?php p($l->t('Default feeds')); ?>
             </label>
         </p>
         <p>
             <em>
-            <?php p($l->t('Description feeds')); ?></em>
+            <?php p($l->t('List of feeds imported by default to all users. The imported feeds are stored in a folder named "Recommended feeds".')); ?></em>
         </p>
         <p><input type="text"
                 name="urlFlux"
                 id="urlFlux"
+                placeholder="<?php p($l->t('Enter an URL')); ?>"
             >
            <button
                 id="addFeed"
@@ -165,7 +166,7 @@ style('news', 'admin');
                 ?>
                 <li
                     style="display: inline-flex; margin-top: 0.7em">
-                    <a style="padding-top: 0.25em"
+                    <a style="padding-top: 0.25em; width: 110px; overflow-wrap: break-word""
                         class="title"
                         name="news-feed-element-flux"
                     >
