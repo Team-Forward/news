@@ -101,10 +101,17 @@
         };
 
         $( "#addFeed" ).click(function() {
+
+            var expression = /[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)?/gi;
+            var regex = new RegExp(expression);
             var urlFlux = $("#urlFlux").val();
-            if(urlFlux!=""){
+
+            if(urlFlux.match(regex)){
                 listFeeds_result.push(urlFlux);
                 $("#urlFlux").val("");
+            }
+            else{
+                alert("Enter a valid URL!");
             }
             submit();
         });
@@ -115,7 +122,7 @@
             submit();
         });
 
-        $('#news input[type="text"]').blur(submit);
+        $('#news input[type="text"][name!="urlFlux"]').blur(submit);
         $('#news input[type="checkbox"]').change(submit);
         $('#news-migrate').click(function () {
             var button = $(this);
