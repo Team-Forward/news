@@ -7,8 +7,10 @@
  *
  * @author    Alessandro Cosentino <cosenal@gmail.com>
  * @author    Bernhard Posselt <dev@bernhard-posselt.com>
+ * @author    Paul Tirk <paultirk@paultirk.com>
  * @copyright 2012 Alessandro Cosentino
  * @copyright 2012-2014 Bernhard Posselt
+ * @copyright 2020 Paul Tirk
  */
 
 namespace OCA\News\Db;
@@ -631,6 +633,36 @@ class Item extends Entity implements IAPI, \JsonSerializable
             'starred' => $this->isStarred(),
             'lastModified' => $this->cropApiLastModified(),
             'rtl' => $this->getRtl(),
+            'fingerprint' => $this->getFingerprint(),
+            'contentHash' => $this->getContentHash()
+        ];
+    }
+
+    public function toAPI2(bool $reduced = false): array
+    {
+        if ($reduced) {
+            return [
+                'id' => $this->getId(),
+                'isUnread' => $this->isUnread(),
+                'isStarred' => $this->isStarred()
+            ];
+        }
+
+        return [
+            'id' => $this->getId(),
+            'url' => $this->getUrl(),
+            'title' => $this->getTitle(),
+            'author' => $this->getAuthor(),
+            'publishedAt' => date('c', $this->getPubDate()),
+            'lastModifiedAt' => date('c', $this->cropApiLastModified()),
+            'enclosure' => [
+                'mimeType' => $this->getEnclosureMime(),
+                'url' => $this->getEnclosureLink()
+            ],
+            'body' => $this->getBody(),
+            'feedId' => $this->getFeedId(),
+            'isUnread' => $this->isUnread(),
+            'isStarred' => $this->isStarred(),
             'fingerprint' => $this->getFingerprint(),
             'contentHash' => $this->getContentHash()
         ];
