@@ -7,8 +7,10 @@
  *
  * @author Alessandro Cosentino <cosenal@gmail.com>
  * @author Bernhard Posselt <dev@bernhard-posselt.com>
+ * @author Paul Tirk <paultirk@paultirk.com>
  * @copyright 2012 Alessandro Cosentino
  * @copyright 2012-2014 Bernhard Posselt
+ * @copyright 2020 Paul Tirk
  */
 
 return ['routes' => [
@@ -50,6 +52,7 @@ return ['routes' => [
 ['name' => 'item#read', 'url' => '/items/{itemId}/read', 'verb' => 'POST'],
 ['name' => 'item#read_multiple', 'url' => '/items/read/multiple', 'verb' => 'POST'],
 ['name' => 'item#star', 'url' => '/items/{feedId}/{guidHash}/star', 'verb' => 'POST'],
+['name' => 'item#share', 'url' => '/items/{itemId}/share/{shareRecipientId}', 'verb' => 'POST'],
 
 // export
 ['name' => 'export#opml', 'url' => '/export/opml', 'verb' => 'GET'],
@@ -57,6 +60,11 @@ return ['routes' => [
 
 // general API
 ['name' => 'api#index', 'url' => '/api', 'verb' => 'GET'],
+
+// API 2
+['name' => 'folder_api_v2#create', 'url' => '/api/v2/folders', 'verb' => 'POST'],
+['name' => 'folder_api_v2#update', 'url' => '/api/v2/folders/{folderId}', 'verb' => 'PATCH'],
+['name' => 'folder_api_v2#delete', 'url' => '/api/v2/folders/{folderId}', 'verb' => 'DELETE'],
 
 // API 1.2
 ['name' => 'user_api#index', 'url' => '/api/v1-2/user', 'verb' => 'GET'],

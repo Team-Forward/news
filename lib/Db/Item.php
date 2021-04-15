@@ -7,8 +7,10 @@
  *
  * @author    Alessandro Cosentino <cosenal@gmail.com>
  * @author    Bernhard Posselt <dev@bernhard-posselt.com>
+ * @author    Paul Tirk <paultirk@paultirk.com>
  * @copyright 2012 Alessandro Cosentino
  * @copyright 2012-2014 Bernhard Posselt
+ * @copyright 2020 Paul Tirk
  */
 
 namespace OCA\News\Db;
@@ -65,6 +67,10 @@ class Item extends Entity implements IAPI, \JsonSerializable
     protected $starred = false;
     /** @var string|null */
     protected $categoriesJson;
+    /** @var string|null */
+    protected $sharedBy;
+    /** @var string|null */
+    protected $sharedByDisplayName;
 
     public function __construct()
     {
@@ -88,6 +94,33 @@ class Item extends Entity implements IAPI, \JsonSerializable
         $this->addType('unread', 'boolean');
         $this->addType('starred', 'boolean');
         $this->addType('categoriesJson', 'string');
+        $this->addType('sharedBy', 'string');
+    }
+
+    public function __clone()
+    {
+        $this->resetUpdatedFields();
+        $this->markFieldUpdated('contentHash');
+        $this->markFieldUpdated('guidHash');
+        $this->markFieldUpdated('guid');
+        $this->markFieldUpdated('url');
+        $this->markFieldUpdated('title');
+        $this->markFieldUpdated('author');
+        $this->markFieldUpdated('pubDate');
+        $this->markFieldUpdated('body');
+        $this->markFieldUpdated('enclosureMime');
+        $this->markFieldUpdated('enclosureLink');
+        $this->markFieldUpdated('mediaThumbnail');
+        $this->markFieldUpdated('mediaDescription');
+        $this->markFieldUpdated('feedId');
+        $this->markFieldUpdated('lastModified');
+        $this->markFieldUpdated('searchIndex');
+        $this->markFieldUpdated('rtl');
+        $this->markFieldUpdated('fingerprint');
+        $this->markFieldUpdated('unread');
+        $this->markFieldUpdated('starred');
+        $this->markFieldUpdated('categoriesJson');
+        $this->markFieldUpdated('sharedBy');
     }
 
     /**
@@ -126,7 +159,7 @@ class Item extends Entity implements IAPI, \JsonSerializable
 
     public function generateSearchIndex(): void
     {
-        $categoriesString = !empty($this->getCategories())
+        $categoriesString = !is_null($this->getCategories())
             ? implode('', $this->getCategories())
             : '';
 
@@ -283,6 +316,16 @@ class Item extends Entity implements IAPI, \JsonSerializable
         return $this->unread;
     }
 
+    public function getSharedBy(): ?string
+    {
+        return $this->sharedBy;
+    }
+
+    public function getSharedByDisplayName(): ?string
+    {
+        return $this->sharedByDisplayName;
+    }
+
     /**
      * @return null|string
      */
@@ -325,7 +368,9 @@ class Item extends Entity implements IAPI, \JsonSerializable
             'rtl' => $this->getRtl(),
             'intro' => $this->getIntro(),
             'fingerprint' => $this->getFingerprint(),
-            'categories' => $this->getCategories()
+            'categories' => $this->getCategories(),
+            'sharedBy' => $this->getSharedBy(),
+            'sharedByDisplayName' => $this->getSharedByDisplayName()
         ];
     }
 
@@ -507,6 +552,25 @@ class Item extends Entity implements IAPI, \JsonSerializable
         return $this;
     }
 
+    public function setSharedBy(string $sharedBy = null): self
+    {
+        if ($this->sharedBy !== $sharedBy) {
+            $this->sharedBy = $sharedBy;
+            $this->markFieldUpdated('sharedBy');
+        }
+
+        return $this;
+    }
+
+    public function setSharedByDisplayName(string $sharedByDisplayName = null): self
+    {
+        if ($this->sharedByDisplayName !== $sharedByDisplayName) {
+            $this->sharedByDisplayName = $sharedByDisplayName;
+        }
+
+        return $this;
+    }
+
     public function setUnread(bool $unread): self
     {
         if ($this->unread !== $unread) {
@@ -542,7 +606,7 @@ class Item extends Entity implements IAPI, \JsonSerializable
 
     public function setCategories(array $categories = null): self
     {
-        $categoriesJson = !empty($categories) ? json_encode($categories) : null;
+        $categoriesJson = !is_null($categories) ? json_encode($categories) : null;
         $this->setCategoriesJson($categoriesJson);
 
         return $this;
@@ -574,14 +638,44 @@ class Item extends Entity implements IAPI, \JsonSerializable
         ];
     }
 
+    public function toAPI2(bool $reduced = false): array
+    {
+        if ($reduced) {
+            return [
+                'id' => $this->getId(),
+                'isUnread' => $this->isUnread(),
+                'isStarred' => $this->isStarred()
+            ];
+        }
+
+        return [
+            'id' => $this->getId(),
+            'url' => $this->getUrl(),
+            'title' => $this->getTitle(),
+            'author' => $this->getAuthor(),
+            'publishedAt' => date('c', $this->getPubDate()),
+            'lastModifiedAt' => date('c', $this->cropApiLastModified()),
+            'enclosure' => [
+                'mimeType' => $this->getEnclosureMime(),
+                'url' => $this->getEnclosureLink()
+            ],
+            'body' => $this->getBody(),
+            'feedId' => $this->getFeedId(),
+            'isUnread' => $this->isUnread(),
+            'isStarred' => $this->isStarred(),
+            'fingerprint' => $this->getFingerprint(),
+            'contentHash' => $this->getContentHash()
+        ];
+    }
+
     /**
      * Format for exporting.
      *
-     * @param $feeds
+     * @param array $feeds List of feeds
      *
      * @return array
      */
-    public function toExport($feeds): array
+    public function toExport(array $feeds): array
     {
         return [
             'guid' => $this->getGuid(),
@@ -622,7 +716,7 @@ class Item extends Entity implements IAPI, \JsonSerializable
     /**
      * Check if a given mimetype is supported
      *
-     * @param string $mime mimetype to check
+     * @param string|null $mime mimetype to check
      *
      * @return boolean
      */

@@ -16,6 +16,8 @@ OC.L10N.register(
     "Maximum redirects" : "最大リダイレクト数",
     "Feed fetcher timeout" : "フィードフェッチャーのタイムアウト",
     "Explore Service URL" : "サービスURLの探索",
+    "For more information check the wiki." : "詳しい情報はWikiを確認してください。",
+    "Update interval" : "アップデート周期",
     "Saved" : "保存しました",
     "Download" : "ダウンロード",
     "Close" : "閉じる",
@@ -109,6 +111,6 @@ OC.L10N.register(
     "Help" : "ヘルプ",
     "Keyboard shortcuts" : "キーボードショートカット",
     "Documentation" : "ドキュメント",
-    "Report a bug" : "バグを報告"
+    "Report a bug" : "不具合を報告"
 },
 "nplurals=1; plural=0;");

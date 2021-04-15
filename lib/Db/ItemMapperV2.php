@@ -19,6 +19,7 @@ use OCA\News\Utility\Time;
 use OCP\AppFramework\Db\DoesNotExistException;
 use OCP\AppFramework\Db\Entity;
 use OCP\AppFramework\Db\MultipleObjectsReturnedException;
+use OCP\DB\Exception as DBException;
 use OCP\DB\QueryBuilder\IQueryBuilder;
 use OCP\IDBConnection;
 
@@ -132,12 +133,12 @@ class ItemMapperV2 extends NewsMapperV2
      * @param int    $feedId   ID of the feed
      * @param string $guidHash hash to find with
      *
-     * @return Item|Entity
+     * @return Item
      *
      * @throws DoesNotExistException
      * @throws MultipleObjectsReturnedException
      */
-    public function findForUserByGuidHash(string $userId, int $feedId, string $guidHash): Item
+    public function findForUserByGuidHash(string $userId, int $feedId, string $guidHash): Entity
     {
         $builder = $this->db->getQueryBuilder();
         $builder->select('items.*')
@@ -254,20 +255,35 @@ class ItemMapperV2 extends NewsMapperV2
      * @param int    $maxItemId
      *
      * @TODO: Update this for NC 21
+     *
+     * @return int
+     *
+     * @throws DBException
      */
-    public function readAll(string $userId, int $maxItemId): void
+    public function readAll(string $userId, int $maxItemId): int
     {
+        $idBuilder = $this->db->getQueryBuilder();
+        $idBuilder->select('items.id')
+            ->from(ItemMapperV2::TABLE_NAME, 'items')
+            ->innerJoin('items', FeedMapperV2::TABLE_NAME, 'feeds', 'items.feed_id = feeds.id')
+            ->andWhere('feeds.user_id = :userId')
+            ->andWhere('items.id <= :maxItemId')
+            ->setParameter('userId', $userId)
+            ->setParameter('maxItemId', $maxItemId);
+
+        $idList = array_map(function ($value): int {
+            return intval($value['id']);
+        }, $this->db->executeQuery($idBuilder->getSQL(), $idBuilder->getParameters())->fetchAll());
+
         $builder = $this->db->getQueryBuilder();
+        $builder->update(self::TABLE_NAME)
+            ->set('unread', $builder->createParameter('unread'))
+            ->andWhere('id IN (:idList)')
+            ->andWhere('unread != :unread')
+            ->setParameter('unread', false, IQueryBuilder::PARAM_BOOL)
+            ->setParameter('idList', $idList, IQueryBuilder::PARAM_INT_ARRAY);
 
-        $builder->update($this->tableName, 'items')
-                ->innerJoin('items', FeedMapperV2::TABLE_NAME, 'feeds', 'items.feed_id = feeds.id')
-                ->setValue('unread', 0)
-                ->andWhere('items.id =< :maxItemId')
-                ->andWhere('feeds.user_id = :userId')
-                ->setParameter('maxItemId', $maxItemId)
-                ->setParameter('userId', $userId);
-
-        $this->db->executeUpdate($builder->getSQL());
+        return $this->db->executeUpdate($builder->getSQL(), $builder->getParameters(), $builder->getParameterTypes());
     }
 
     /**
@@ -316,6 +332,7 @@ class ItemMapperV2 extends NewsMapperV2
             ->andWhere('items.last_modified >= :updatedSince')
             ->andWhere('feeds.user_id = :userId')
             ->andWhere('feeds.id = :feedId')
+            ->andWhere('feeds.deleted_at = 0')
             ->setParameters([
                 'updatedSince' => $updatedSince,
                 'feedId' => $feedId,
@@ -325,7 +342,8 @@ class ItemMapperV2 extends NewsMapperV2
             ->addOrderBy('items.id', 'DESC');
 
         if ($hideRead === true) {
-            $builder->andWhere('items.unread = 1');
+            $builder->andWhere('items.unread = :unread')
+                    ->setParameter('unread', true);
         }
 
         return $this->findEntities($builder);
@@ -353,13 +371,15 @@ class ItemMapperV2 extends NewsMapperV2
             ->innerJoin('feeds', FolderMapperV2::TABLE_NAME, 'folders', 'feeds.folder_id = folders.id')
             ->andWhere('items.last_modified >= :updatedSince')
             ->andWhere('feeds.user_id = :userId')
+            ->andWhere('feeds.deleted_at = 0')
             ->andWhere('folders.id = :folderId')
             ->setParameters(['updatedSince' => $updatedSince, 'folderId' => $folderId, 'userId' => $userId])
             ->orderBy('items.last_modified', 'DESC')
             ->addOrderBy('items.id', 'DESC');
 
         if ($hideRead === true) {
-            $builder->andWhere('items.unread = 1');
+            $builder->andWhere('items.unread = :unread')
+                    ->setParameter('unread', true);
         }
 
         return $this->findEntities($builder);
@@ -381,6 +401,7 @@ class ItemMapperV2 extends NewsMapperV2
             ->from($this->tableName, 'items')
             ->innerJoin('items', FeedMapperV2::TABLE_NAME, 'feeds', 'items.feed_id = feeds.id')
             ->andWhere('items.last_modified >= :updatedSince')
+            ->andWhere('feeds.deleted_at = 0')
             ->andWhere('feeds.user_id = :userId')
             ->setParameters(['updatedSince' => $updatedSince, 'userId' => $userId])
             ->orderBy('items.last_modified', 'DESC')
@@ -388,10 +409,12 @@ class ItemMapperV2 extends NewsMapperV2
 
         switch ($feedType) {
             case ListType::STARRED:
-                $builder->andWhere('items.starred = 1');
+                $builder->andWhere('items.starred = :starred')
+                        ->setParameter('starred', true);
                 break;
             case ListType::UNREAD:
-                $builder->andWhere('items.unread = 1');
+                $builder->andWhere('items.unread = :unread')
+                        ->setParameter('unread', true);
                 break;
             case ListType::ALL_ITEMS:
                 break;
@@ -443,11 +466,11 @@ class ItemMapperV2 extends NewsMapperV2
         $builder->select('items.*')
             ->from($this->tableName, 'items')
             ->innerJoin('items', FeedMapperV2::TABLE_NAME, 'feeds', 'items.feed_id = feeds.id')
+            ->andWhere('feeds.deleted_at = 0')
             ->andWhere('feeds.user_id = :userId')
             ->andWhere('items.feed_id = :feedId')
             ->setParameter('userId', $userId)
             ->setParameter('feedId', $feedId)
-            ->setMaxResults($limit)
             ->orderBy('items.last_modified', ($oldestFirst ? 'ASC' : 'DESC'))
             ->addOrderBy('items.id', ($oldestFirst ? 'ASC' : 'DESC'));
 
@@ -455,17 +478,22 @@ class ItemMapperV2 extends NewsMapperV2
             foreach ($search as $key => $term) {
                 $term = $this->db->escapeLikeParameter($term);
                 $builder->andWhere("items.search_index LIKE :term${key}")
-                    ->setParameter("term${key}", "%$term%");
+                        ->setParameter("term${key}", "%$term%");
             }
+        }
+
+        if ($limit >= 1) {
+            $builder->setMaxResults($limit);
         }
 
         if ($offset !== 0) {
             $builder->andWhere($this->offsetWhere($oldestFirst))
-                ->setParameter('offset', $offset);
+                    ->setParameter('offset', $offset);
         }
 
         if ($hideRead === true) {
-            $builder->andWhere('items.unread = 1');
+            $builder->andWhere('items.unread = :unread')
+                    ->setParameter('unread', true);
         }
 
         return $this->findEntities($builder);
@@ -503,9 +531,9 @@ class ItemMapperV2 extends NewsMapperV2
             ->from($this->tableName, 'items')
             ->innerJoin('items', FeedMapperV2::TABLE_NAME, 'feeds', 'items.feed_id = feeds.id')
             ->andWhere('feeds.user_id = :userId')
+            ->andWhere('feeds.deleted_at = 0')
             ->andWhere($folderWhere)
             ->setParameter('userId', $userId)
-            ->setMaxResults($limit)
             ->orderBy('items.last_modified', ($oldestFirst ? 'ASC' : 'DESC'))
             ->addOrderBy('items.id', ($oldestFirst ? 'ASC' : 'DESC'));
 
@@ -513,17 +541,22 @@ class ItemMapperV2 extends NewsMapperV2
             foreach ($search as $key => $term) {
                 $term = $this->db->escapeLikeParameter($term);
                 $builder->andWhere("items.search_index LIKE :term${key}")
-                    ->setParameter("term${key}", "%$term%");
+                        ->setParameter("term${key}", "%$term%");
             }
+        }
+
+        if ($limit >= 1) {
+            $builder->setMaxResults($limit);
         }
 
         if ($offset !== 0) {
             $builder->andWhere($this->offsetWhere($oldestFirst))
-                ->setParameter('offset', $offset);
+                    ->setParameter('offset', $offset);
         }
 
         if ($hideRead === true) {
-            $builder->andWhere('items.unread = 1');
+            $builder->andWhere('items.unread = :unread')
+                    ->setParameter('unread', true);
         }
 
         return $this->findEntities($builder);
@@ -554,8 +587,8 @@ class ItemMapperV2 extends NewsMapperV2
             ->from($this->tableName, 'items')
             ->innerJoin('items', FeedMapperV2::TABLE_NAME, 'feeds', 'items.feed_id = feeds.id')
             ->andWhere('feeds.user_id = :userId')
+            ->andWhere('feeds.deleted_at = 0')
             ->setParameter('userId', $userId)
-            ->setMaxResults($limit)
             ->orderBy('items.last_modified', ($oldestFirst ? 'ASC' : 'DESC'))
             ->addOrderBy('items.id', ($oldestFirst ? 'ASC' : 'DESC'));
 
@@ -567,17 +600,23 @@ class ItemMapperV2 extends NewsMapperV2
             }
         }
 
+        if ($limit >= 1) {
+            $builder->setMaxResults($limit);
+        }
+
         if ($offset !== 0) {
             $builder->andWhere($this->offsetWhere($oldestFirst))
-                ->setParameter('offset', $offset);
+                    ->setParameter('offset', $offset);
         }
 
         switch ($type) {
             case ListType::STARRED:
-                $builder->andWhere('items.starred = 1');
+                $builder->andWhere('items.starred = :starred')
+                        ->setParameter('starred', true);
                 break;
             case ListType::UNREAD:
-                $builder->andWhere('items.unread = 1');
+                $builder->andWhere('items.unread = :unread')
+                        ->setParameter('unread', true);
                 break;
             case ListType::ALL_ITEMS:
                 break;

@@ -112,7 +112,7 @@ class FeedFetcher implements IFeedFetcher
         ?string $password
     ): array {
         $url2 = new Net_URL2($url);
-        if (!empty($user) && !empty(trim($user))) {
+        if (!is_null($user) && trim($user) !== '') {
             $url2->setUserinfo(urlencode($user), urlencode($password));
         }
         $url = $url2->getNormalizedURL();
@@ -258,7 +258,9 @@ class FeedFetcher implements IFeedFetcher
 
         $categories = [];
         foreach ($parsedItem->getCategories() as $category) {
-            $categories[] = $this->decodeTwice($category->getLabel());
+            if ($category->getLabel() !== null) {
+                $categories[] = $this->decodeTwice($category->getLabel());
+            }
         }
         $item->setCategories($categories);
 

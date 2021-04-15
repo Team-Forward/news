@@ -16,6 +16,7 @@ namespace OCA\News\Tests\Unit\Controller;
 use OCA\News\Controller\ItemController;
 use OCA\News\Service\FeedServiceV2;
 use OCA\News\Service\ItemServiceV2;
+use OCA\News\Service\ShareService;
 use \OCP\AppFramework\Http;
 
 use \OCA\News\Db\Item;
@@ -46,6 +47,10 @@ class ItemControllerTest extends TestCase
      * @var \PHPUnit\Framework\MockObject\MockObject|FeedServiceV2
      */
     private $feedService;
+    /**
+     * @var \PHPUnit\Framework\MockObject\MockObject|ShareService
+     */
+    private $shareService;
     /**
      * @var \PHPUnit\Framework\MockObject\MockObject|IRequest
      */
@@ -79,6 +84,10 @@ class ItemControllerTest extends TestCase
         $this->getMockBuilder(FeedServiceV2::class)
             ->disableOriginalConstructor()
             ->getMock();
+        $this->shareService =
+        $this->getMockBuilder(ShareService::class)
+            ->disableOriginalConstructor()
+            ->getMock();
         $this->request = $this->getMockBuilder(IRequest::class)
             ->disableOriginalConstructor()
             ->getMock();
@@ -95,6 +104,7 @@ class ItemControllerTest extends TestCase
             $this->request,
             $this->feedService,
             $this->itemService,
+            $this->shareService,
             $this->settings,
             $this->userSession
         );
@@ -124,6 +134,33 @@ class ItemControllerTest extends TestCase
         $params = json_decode($response->render(), true);
 
         $this->assertEquals(Http::STATUS_NOT_FOUND, $response->getStatus());
+        $this->assertEquals($msg, $params['message']);
+    }
+
+
+    public function testShare()
+    {
+        $this->shareService->expects($this->once())
+            ->method('shareItemWithUser')
+            ->with('user', 4, 'test');
+
+        $this->controller->share(4, 'test');
+    }
+
+
+    public function testShareDoesNotExist()
+    {
+        $msg = 'hi';
+
+        $this->shareService->expects($this->once())
+            ->method('shareItemWithUser')
+            ->with('user', 4, 'test')
+            ->will($this->throwException(new ServiceNotFoundException($msg)));
+
+        $response = $this->controller->share(4, 'test');
+        $params = json_decode($response->render(), true);
+
+        $this->assertEquals($response->getStatus(), Http::STATUS_NOT_FOUND);
         $this->assertEquals($msg, $params['message']);
     }
 
@@ -256,6 +293,11 @@ class ItemControllerTest extends TestCase
             ->with('user', 2, 3, 0, false, false, [])
             ->will($this->returnValue($result['items']));
 
+        $this->shareService->expects($this->once())
+            ->method('mapSharedByDisplayNames')
+            ->with($result['items'])
+            ->will($this->returnValue($result['items']));
+
         $response = $this->controller->index(ListType::FEED, 2, 3);
         $this->assertEquals($result, $response);
     }
@@ -291,6 +333,11 @@ class ItemControllerTest extends TestCase
         $this->itemService->expects($this->once())
             ->method('findAllInFolderWithFilters')
             ->with('user', 2, 3, 0, false, false, [])
+            ->will($this->returnValue($result['items']));
+
+        $this->shareService->expects($this->once())
+            ->method('mapSharedByDisplayNames')
+            ->with($result['items'])
             ->will($this->returnValue($result['items']));
 
         $response = $this->controller->index(ListType::FOLDER, 2, 3);
@@ -330,6 +377,11 @@ class ItemControllerTest extends TestCase
             ->with('user', 2, 3, 0, false, [])
             ->will($this->returnValue($result['items']));
 
+        $this->shareService->expects($this->once())
+            ->method('mapSharedByDisplayNames')
+            ->with($result['items'])
+            ->will($this->returnValue($result['items']));
+
         $response = $this->controller->index(ListType::STARRED, 2, 3);
         $this->assertEquals($result, $response);
     }
@@ -367,6 +419,11 @@ class ItemControllerTest extends TestCase
             ->with('user', 2, 3, 0, false, false, ['test', 'search'])
             ->will($this->returnValue($result['items']));
 
+        $this->shareService->expects($this->once())
+            ->method('mapSharedByDisplayNames')
+            ->with($result['items'])
+            ->will($this->returnValue($result['items']));
+
         $response = $this->controller->index(ListType::FEED, 2, 3, 0, null, null, 'test%20%20search%20');
         $this->assertEquals($result, $response);
     }
@@ -381,6 +438,11 @@ class ItemControllerTest extends TestCase
         $this->itemService->expects($this->once())
             ->method('findAllInFeedWithFilters')
             ->with('user', 2, 3, 10, false, true)
+            ->will($this->returnValue($result['items']));
+
+        $this->shareService->expects($this->once())
+            ->method('mapSharedByDisplayNames')
+            ->with($result['items'])
             ->will($this->returnValue($result['items']));
 
         $this->feedService->expects($this->never())
@@ -440,6 +502,11 @@ class ItemControllerTest extends TestCase
             ->with('user', 2, 3, false)
             ->will($this->returnValue($result['items']));
 
+        $this->shareService->expects($this->once())
+            ->method('mapSharedByDisplayNames')
+            ->with($result['items'])
+            ->will($this->returnValue($result['items']));
+
         $response = $this->controller->newItems(ListType::FEED, 2, 3);
         $this->assertEquals($result, $response);
     }
@@ -480,6 +547,11 @@ class ItemControllerTest extends TestCase
             ->with('user', 2, 3, false)
             ->will($this->returnValue($result['items']));
 
+        $this->shareService->expects($this->once())
+            ->method('mapSharedByDisplayNames')
+            ->with($result['items'])
+            ->will($this->returnValue($result['items']));
+
         $response = $this->controller->newItems(ListType::FOLDER, 2, 3);
         $this->assertEquals($result, $response);
     }
@@ -518,6 +590,11 @@ class ItemControllerTest extends TestCase
         $this->itemService->expects($this->once())
             ->method('findAllAfter')
             ->with('user', 6, 3)
+            ->will($this->returnValue($result['items']));
+
+        $this->shareService->expects($this->once())
+            ->method('mapSharedByDisplayNames')
+            ->with($result['items'])
             ->will($this->returnValue($result['items']));
 
         $response = $this->controller->newItems(ListType::UNREAD, 2, 3);

@@ -356,9 +356,8 @@ Status codes:
 * **200**: Folder was created successfully
 * **400**: Folder creation error, check the error object:
   * **code**: 1: folder name is empty
-* **409**: Folder with given name exists already
 
-In case of an HTTP 200 or 409, the created or already existing folder is returned in full in the response, e.g.:
+In case of an HTTP 200, the created or already existing folder is returned in full in the response, e.g.:
 
 ```js
 {
@@ -389,13 +388,12 @@ with the following request body:
 The following response is being returned:
 
 Status codes:
-* **200**: Folder was created successfully
-* **400**: Folder creation error, check the error object:
+* **200**: Folder was updated successfully
+* **400**: Folder update error, check the error object:
   * **code**: 1: folder name is empty
-* **409**: Folder with given name exists already
 * Other ownCloud errors, see [Response Format](#response-format)
 
-In case of an HTTP 200 or 409, the changed or already existing folder is returned in full in the response, e.g.:
+In case of an HTTP 200, the changed or already existing folder is returned in full in the response, e.g.:
 
 ```js
 {
@@ -604,7 +602,7 @@ The attributes mean the following:
 * **title**: Abitrary long text, item's title
 * **author**: Abitrary long text, name of the author/authors
 * **publishedAt**: String representing an ISO 8601 DateTime object, when the item was published
-* **updatedAt**: String representing an ISO 8601 DateTime object, when the item was updated
+* **lastModifiedAt**: String representing an ISO 8601 DateTime object, when the item was last modified
 * **enclosure**: An enclosure object or null if none is present
   * **mimeType**: Abitrary long text, the enclosures mime type
   * **url**: Abitrary long text, location of the enclosure
@@ -626,7 +624,7 @@ A full item contains the full content:
     "title": "Plasma-nm after the solid sprint",
     "author": "Jan Grulich (grulja)",
     "publishedAt": "2005-08-15T15:52:01+0000",
-    "updatedAt": "2005-08-15T15:52:01+0000",
+    "lastModifiedAt": "2005-08-15T15:52:01+0000",
     "enclosure": {
         "mimeType": "video/webm",
         "url": "http://video.webmfiles.org/elephants-dream.webm"

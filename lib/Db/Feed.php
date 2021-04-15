@@ -7,8 +7,10 @@
  *
  * @author    Alessandro Cosentino <cosenal@gmail.com>
  * @author    Bernhard Posselt <dev@bernhard-posselt.com>
+ * @author    Paul Tirk <paultirk@paultirk.com>
  * @copyright 2012 Alessandro Cosentino
  * @copyright 2012-2014 Bernhard Posselt
+ * @copyright 2020 Paul Tirk
  */
 
 namespace OCA\News\Db;
@@ -659,5 +661,28 @@ class Feed extends Entity implements IAPI, \JsonSerializable
                 'items'
             ]
         );
+    }
+
+    public function toAPI2(bool $reduced = false): array
+    {
+        $result = [
+            'id' => $this->getId(),
+            'name' => $this->getTitle(),
+            'faviconLink' => $this->getFaviconLink(),
+            'folderId' => $this->getFolderId(),
+            'ordering' => $this->getOrdering(),
+            'fullTextEnabled' => $this->getFullTextEnabled(),
+            'updateMode' => $this->getUpdateMode(),
+            'isPinned' => $this->getPinned()
+        ];
+
+        if (!is_null($this->getLastUpdateError()) || trim($this->getLastUpdateError()) !== '') {
+            $result['error'] = [
+                'code' => 1,
+                'message' => $this->getLastUpdateError()
+            ];
+        }
+
+        return $result;
     }
 }

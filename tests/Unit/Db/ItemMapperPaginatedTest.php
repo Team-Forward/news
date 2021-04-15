@@ -14,23 +14,11 @@
 namespace OCA\News\Tests\Unit\Db;
 
 use OC\DB\QueryBuilder\Literal;
-use OCA\News\Db\Feed;
-use OCA\News\Db\FeedMapperV2;
-use OCA\News\Db\Folder;
 use OCA\News\Db\Item;
 use OCA\News\Db\ItemMapperV2;
-use OCA\News\Db\NewsMapperV2;
 use OCA\News\Service\Exceptions\ServiceValidationException;
 use OCA\News\Utility\Time;
-use OCP\AppFramework\Db\DoesNotExistException;
-use OCP\AppFramework\Db\MultipleObjectsReturnedException;
-use OCP\DB\IResult;
 use OCP\DB\QueryBuilder\IExpressionBuilder;
-use OCP\DB\QueryBuilder\IFunctionBuilder;
-use OCP\DB\QueryBuilder\IQueryBuilder;
-use OCP\DB\QueryBuilder\IQueryFunction;
-use OCP\IDBConnection;
-use Test\TestCase;
 
 /**
  * Class ItemMapperTest
@@ -40,8 +28,6 @@ use Test\TestCase;
 class ItemMapperPaginatedTest extends MapperTestUtility
 {
 
-    /** @var Time */
-    private $time;
     /** @var ItemMapperV2 */
     private $class;
 
@@ -51,10 +37,10 @@ class ItemMapperPaginatedTest extends MapperTestUtility
     protected function setUp(): void
     {
         parent::setUp();
-        $this->time = $this->getMockBuilder(Time::class)
+        $time = $this->getMockBuilder(Time::class)
                            ->getMock();
 
-        $this->class = new ItemMapperV2($this->db, $this->time);
+        $this->class = new ItemMapperV2($this->db, $time);
     }
 
     public function testFindAllItemsInvalid()
@@ -81,10 +67,11 @@ class ItemMapperPaginatedTest extends MapperTestUtility
             ->withConsecutive(['items', 'news_feeds', 'feeds', 'items.feed_id = feeds.id'])
             ->will($this->returnSelf());
 
-        $this->builder->expects($this->exactly(2))
+        $this->builder->expects($this->exactly(3))
             ->method('andWhere')
             ->withConsecutive(
-                ['feeds.user_id = :userId']
+                ['feeds.user_id = :userId'],
+                ['feeds.deleted_at = 0']
             )
             ->will($this->returnSelf());
 
@@ -150,10 +137,11 @@ class ItemMapperPaginatedTest extends MapperTestUtility
             ->withConsecutive(['items', 'news_feeds', 'feeds', 'items.feed_id = feeds.id'])
             ->will($this->returnSelf());
 
-        $this->builder->expects($this->exactly(2))
+        $this->builder->expects($this->exactly(3))
             ->method('andWhere')
             ->withConsecutive(
                 ['feeds.user_id = :userId'],
+                ['feeds.deleted_at = 0'],
                 ['items.id > :offset']
             )
             ->will($this->returnSelf());
@@ -221,26 +209,25 @@ class ItemMapperPaginatedTest extends MapperTestUtility
             ->withConsecutive(['items', 'news_feeds', 'feeds', 'items.feed_id = feeds.id'])
             ->will($this->returnSelf());
 
-        $this->builder->expects($this->exactly(3))
+        $this->builder->expects($this->exactly(4))
             ->method('andWhere')
             ->withConsecutive(
                 ['feeds.user_id = :userId'],
+                ['feeds.deleted_at = 0'],
                 ['items.id < :offset'],
-                ['items.unread = 1']
+                ['items.unread = :unread']
             )
             ->will($this->returnSelf());
 
-        $this->builder->expects($this->exactly(2))
+        $this->builder->expects($this->exactly(3))
             ->method('setParameter')
-            ->withConsecutive(['userId', 'jack'], ['offset', 10])
+            ->withConsecutive(['userId', 'jack'], ['offset', 10], ['unread', true])
             ->will($this->returnSelf());
-
 
         $this->builder->expects($this->exactly(1))
             ->method('setMaxResults')
             ->with(10)
             ->will($this->returnSelf());
-
 
         $this->builder->expects($this->exactly(0))
             ->method('setFirstResult')
@@ -272,6 +259,75 @@ class ItemMapperPaginatedTest extends MapperTestUtility
         $this->assertEquals([Item::fromRow(['id' => 4])], $result);
     }
 
+    public function testFindAllItemsUnreadNoLimit()
+    {
+        $this->db->expects($this->once())
+            ->method('getQueryBuilder')
+            ->willReturn($this->builder);
+
+        $this->builder->expects($this->once())
+            ->method('select')
+            ->with('items.*')
+            ->will($this->returnSelf());
+
+        $this->builder->expects($this->once())
+            ->method('from')
+            ->with('news_items', 'items')
+            ->will($this->returnSelf());
+
+        $this->builder->expects($this->exactly(1))
+            ->method('innerJoin')
+            ->withConsecutive(['items', 'news_feeds', 'feeds', 'items.feed_id = feeds.id'])
+            ->will($this->returnSelf());
+
+        $this->builder->expects($this->exactly(4))
+            ->method('andWhere')
+            ->withConsecutive(
+                ['feeds.user_id = :userId'],
+                ['feeds.deleted_at = 0'],
+                ['items.id < :offset'],
+                ['items.unread = :unread']
+            )
+            ->will($this->returnSelf());
+
+        $this->builder->expects($this->exactly(3))
+            ->method('setParameter')
+            ->withConsecutive(['userId', 'jack'], ['offset', 10], ['unread', true])
+            ->will($this->returnSelf());
+
+        $this->builder->expects($this->never())
+            ->method('setMaxResults');
+
+        $this->builder->expects($this->exactly(0))
+            ->method('setFirstResult')
+            ->with(10)
+            ->will($this->returnSelf());
+
+        $this->builder->expects($this->once())
+            ->method('orderBy')
+            ->with('items.last_modified', 'DESC')
+            ->will($this->returnSelf());
+
+        $this->builder->expects($this->once())
+            ->method('addOrderBy')
+            ->with('items.id', 'DESC')
+            ->willReturnSelf();
+
+        $this->builder->expects($this->exactly(1))
+            ->method('execute')
+            ->will($this->returnValue($this->cursor));
+
+        $this->cursor->expects($this->exactly(2))
+            ->method('fetch')
+            ->willReturnOnConsecutiveCalls(
+                ['id' => 4],
+                false
+            );
+
+        $result = $this->class->findAllItems('jack', 6, -1, 10, false, []);
+        $this->assertEquals([Item::fromRow(['id' => 4])], $result);
+    }
+
     public function testFindAllItemsStarred()
     {
         $this->db->expects($this->once())
@@ -293,18 +349,19 @@ class ItemMapperPaginatedTest extends MapperTestUtility
             ->withConsecutive(['items', 'news_feeds', 'feeds', 'items.feed_id = feeds.id'])
             ->will($this->returnSelf());
 
-        $this->builder->expects($this->exactly(3))
+        $this->builder->expects($this->exactly(4))
             ->method('andWhere')
             ->withConsecutive(
                 ['feeds.user_id = :userId'],
+                ['feeds.deleted_at = 0'],
                 ['items.id < :offset'],
-                ['items.starred = 1']
+                ['items.starred = :starred']
             )
             ->will($this->returnSelf());
 
-        $this->builder->expects($this->exactly(2))
+        $this->builder->expects($this->exactly(3))
             ->method('setParameter')
-            ->withConsecutive(['userId', 'jack'], ['offset', 10])
+            ->withConsecutive(['userId', 'jack'], ['offset', 10], ['starred', true])
             ->will($this->returnSelf());
 
 
@@ -367,20 +424,27 @@ class ItemMapperPaginatedTest extends MapperTestUtility
             ->withConsecutive(['items', 'news_feeds', 'feeds', 'items.feed_id = feeds.id'])
             ->will($this->returnSelf());
 
-        $this->builder->expects($this->exactly(5))
+        $this->builder->expects($this->exactly(6))
             ->method('andWhere')
             ->withConsecutive(
                 ['feeds.user_id = :userId'],
+                ['feeds.deleted_at = 0'],
                 ['items.search_index LIKE :term0'],
                 ['items.search_index LIKE :term1'],
                 ['items.id < :offset'],
-                ['items.starred = 1']
+                ['items.starred = :starred']
             )
             ->will($this->returnSelf());
 
-        $this->builder->expects($this->exactly(4))
+        $this->builder->expects($this->exactly(5))
             ->method('setParameter')
-            ->withConsecutive(['userId', 'jack'], ['term0', '%key%'], ['term1', '%word%'], ['offset', 10])
+            ->withConsecutive(
+                ['userId', 'jack'],
+                ['term0', '%key%'],
+                ['term1', '%word%'],
+                ['offset', 10],
+                ['starred', true]
+            )
             ->will($this->returnSelf());
 
 
@@ -441,9 +505,10 @@ class ItemMapperPaginatedTest extends MapperTestUtility
             ->withConsecutive(['items', 'news_feeds', 'feeds', 'items.feed_id = feeds.id'])
             ->will($this->returnSelf());
 
-        $this->builder->expects($this->exactly(3))
+        $this->builder->expects($this->exactly(4))
             ->method('andWhere')
             ->withConsecutive(
+                ['feeds.deleted_at = 0'],
                 ['feeds.user_id = :userId'],
                 ['items.feed_id = :feedId'],
                 ['items.id < :offset']
@@ -492,6 +557,77 @@ class ItemMapperPaginatedTest extends MapperTestUtility
         $this->assertEquals([Item::fromRow(['id' => 4])], $result);
     }
 
+    public function testFindAllFeedNoLimit()
+    {
+        $this->db->expects($this->once())
+            ->method('getQueryBuilder')
+            ->willReturn($this->builder);
+
+        $this->builder->expects($this->once())
+            ->method('select')
+            ->with('items.*')
+            ->will($this->returnSelf());
+
+        $this->builder->expects($this->once())
+            ->method('from')
+            ->with('news_items', 'items')
+            ->will($this->returnSelf());
+
+        $this->builder->expects($this->exactly(1))
+            ->method('innerJoin')
+            ->withConsecutive(['items', 'news_feeds', 'feeds', 'items.feed_id = feeds.id'])
+            ->will($this->returnSelf());
+
+        $this->builder->expects($this->exactly(4))
+            ->method('andWhere')
+            ->withConsecutive(
+                ['feeds.deleted_at = 0'],
+                ['feeds.user_id = :userId'],
+                ['items.feed_id = :feedId'],
+                ['items.id < :offset']
+            )
+            ->will($this->returnSelf());
+
+        $this->builder->expects($this->exactly(3))
+            ->method('setParameter')
+            ->withConsecutive(['userId', 'jack'], ['feedId', 2], ['offset', 10])
+            ->will($this->returnSelf());
+
+
+        $this->builder->expects($this->never())
+            ->method('setMaxResults');
+
+
+        $this->builder->expects($this->exactly(0))
+            ->method('setFirstResult')
+            ->with(10)
+            ->will($this->returnSelf());
+
+        $this->builder->expects($this->once())
+            ->method('orderBy')
+            ->with('items.last_modified', 'DESC')
+            ->will($this->returnSelf());
+
+        $this->builder->expects($this->once())
+            ->method('addOrderBy')
+            ->with('items.id', 'DESC')
+            ->willReturnSelf();
+
+        $this->builder->expects($this->exactly(1))
+            ->method('execute')
+            ->will($this->returnValue($this->cursor));
+
+        $this->cursor->expects($this->exactly(2))
+            ->method('fetch')
+            ->willReturnOnConsecutiveCalls(
+                ['id' => 4],
+                false
+            );
+
+        $result = $this->class->findAllFeed('jack', 2, -1, 10, false, false, []);
+        $this->assertEquals([Item::fromRow(['id' => 4])], $result);
+    }
+
     public function testFindAllFeedInverted()
     {
         $this->db->expects($this->once())
@@ -513,9 +649,10 @@ class ItemMapperPaginatedTest extends MapperTestUtility
             ->withConsecutive(['items', 'news_feeds', 'feeds', 'items.feed_id = feeds.id'])
             ->will($this->returnSelf());
 
-        $this->builder->expects($this->exactly(3))
+        $this->builder->expects($this->exactly(4))
             ->method('andWhere')
             ->withConsecutive(
+                ['feeds.deleted_at = 0'],
                 ['feeds.user_id = :userId'],
                 ['items.feed_id = :feedId'],
                 ['items.id > :offset']
@@ -583,19 +720,20 @@ class ItemMapperPaginatedTest extends MapperTestUtility
             ->withConsecutive(['items', 'news_feeds', 'feeds', 'items.feed_id = feeds.id'])
             ->will($this->returnSelf());
 
-        $this->builder->expects($this->exactly(4))
+        $this->builder->expects($this->exactly(5))
             ->method('andWhere')
             ->withConsecutive(
+                ['feeds.deleted_at = 0'],
                 ['feeds.user_id = :userId'],
                 ['items.feed_id = :feedId'],
                 ['items.id < :offset'],
-                ['items.unread = 1']
+                ['items.unread = :unread']
             )
             ->will($this->returnSelf());
 
-        $this->builder->expects($this->exactly(3))
+        $this->builder->expects($this->exactly(4))
             ->method('setParameter')
-            ->withConsecutive(['userId', 'jack'], ['feedId', 2], ['offset', 10])
+            ->withConsecutive(['userId', 'jack'], ['feedId', 2], ['offset', 10], ['unread', true])
             ->will($this->returnSelf());
 
 
@@ -659,9 +797,10 @@ class ItemMapperPaginatedTest extends MapperTestUtility
             ->withConsecutive(['items', 'news_feeds', 'feeds', 'items.feed_id = feeds.id'])
             ->will($this->returnSelf());
 
-        $this->builder->expects($this->exactly(5))
+        $this->builder->expects($this->exactly(6))
             ->method('andWhere')
             ->withConsecutive(
+                ['feeds.deleted_at = 0'],
                 ['feeds.user_id = :userId'],
                 ['items.feed_id = :feedId'],
                 ['items.search_index LIKE :term0'],
@@ -751,10 +890,11 @@ class ItemMapperPaginatedTest extends MapperTestUtility
             ->withConsecutive(['items', 'news_feeds', 'feeds', 'items.feed_id = feeds.id'])
             ->will($this->returnSelf());
 
-        $this->builder->expects($this->exactly(3))
+        $this->builder->expects($this->exactly(4))
             ->method('andWhere')
             ->withConsecutive(
                 ['feeds.user_id = :userId'],
+                ['feeds.deleted_at = 0'],
                 ['x IS NULL'],
                 ['items.id < :offset']
             )
@@ -802,7 +942,7 @@ class ItemMapperPaginatedTest extends MapperTestUtility
         $this->assertEquals([Item::fromRow(['id' => 4])], $result);
     }
 
-    public function testFindAllFolderHideRead()
+    public function testFindAllFolderIdNullNoLimit()
     {
         $expr = $this->getMockBuilder(IExpressionBuilder::class)
                      ->getMock();
@@ -839,15 +979,99 @@ class ItemMapperPaginatedTest extends MapperTestUtility
             ->method('andWhere')
             ->withConsecutive(
                 ['feeds.user_id = :userId'],
+                ['feeds.deleted_at = 0'],
                 ['x IS NULL'],
-                ['items.id < :offset'],
-                ['items.unread = 1']
+                ['items.id < :offset']
             )
             ->will($this->returnSelf());
 
         $this->builder->expects($this->exactly(2))
             ->method('setParameter')
             ->withConsecutive(['userId', 'jack'], ['offset', 10])
+            ->will($this->returnSelf());
+
+
+        $this->builder->expects($this->never(1))
+            ->method('setMaxResults');
+
+
+        $this->builder->expects($this->exactly(0))
+            ->method('setFirstResult')
+            ->with(10)
+            ->will($this->returnSelf());
+
+        $this->builder->expects($this->once())
+            ->method('orderBy')
+            ->with('items.last_modified', 'DESC')
+            ->will($this->returnSelf());
+
+        $this->builder->expects($this->once())
+            ->method('addOrderBy')
+            ->with('items.id', 'DESC')
+            ->willReturnSelf();
+
+        $this->builder->expects($this->exactly(1))
+            ->method('execute')
+            ->will($this->returnValue($this->cursor));
+
+        $this->cursor->expects($this->exactly(2))
+            ->method('fetch')
+            ->willReturnOnConsecutiveCalls(
+                ['id' => 4],
+                false
+            );
+
+        $result = $this->class->findAllFolder('jack', null, -1, 10, false, false, []);
+        $this->assertEquals([Item::fromRow(['id' => 4])], $result);
+    }
+
+    public function testFindAllFolderHideRead()
+    {
+        $expr = $this->getMockBuilder(IExpressionBuilder::class)
+                     ->getMock();
+
+        $expr->expects($this->once())
+             ->method('isNull')
+             ->with('feeds.folder_id')
+             ->will($this->returnValue('x IS NULL'));
+
+        $this->db->expects($this->once())
+            ->method('getQueryBuilder')
+            ->willReturn($this->builder);
+
+        $this->builder->expects($this->exactly(1))
+            ->method('expr')
+            ->will($this->returnValue($expr));
+
+        $this->builder->expects($this->once())
+            ->method('select')
+            ->with('items.*')
+            ->will($this->returnSelf());
+
+        $this->builder->expects($this->once())
+            ->method('from')
+            ->with('news_items', 'items')
+            ->will($this->returnSelf());
+
+        $this->builder->expects($this->exactly(1))
+            ->method('innerJoin')
+            ->withConsecutive(['items', 'news_feeds', 'feeds', 'items.feed_id = feeds.id'])
+            ->will($this->returnSelf());
+
+        $this->builder->expects($this->exactly(5))
+            ->method('andWhere')
+            ->withConsecutive(
+                ['feeds.user_id = :userId'],
+                ['feeds.deleted_at = 0'],
+                ['x IS NULL'],
+                ['items.id < :offset'],
+                ['items.unread = :unread']
+            )
+            ->will($this->returnSelf());
+
+        $this->builder->expects($this->exactly(3))
+            ->method('setParameter')
+            ->withConsecutive(['userId', 'jack'], ['offset', 10], ['unread', true])
             ->will($this->returnSelf());
 
 
@@ -920,19 +1144,20 @@ class ItemMapperPaginatedTest extends MapperTestUtility
             ->withConsecutive(['items', 'news_feeds', 'feeds', 'items.feed_id = feeds.id'])
             ->will($this->returnSelf());
 
-        $this->builder->expects($this->exactly(4))
+        $this->builder->expects($this->exactly(5))
             ->method('andWhere')
             ->withConsecutive(
                 ['feeds.user_id = :userId'],
+                ['feeds.deleted_at = 0'],
                 ['x IS NULL'],
                 ['items.id > :offset'],
-                ['items.unread = 1']
+                ['items.unread = :unread']
             )
             ->will($this->returnSelf());
 
-        $this->builder->expects($this->exactly(2))
+        $this->builder->expects($this->exactly(3))
             ->method('setParameter')
-            ->withConsecutive(['userId', 'jack'], ['offset', 10])
+            ->withConsecutive(['userId', 'jack'], ['offset', 10], ['unread', true])
             ->will($this->returnSelf());
 
 
@@ -1008,10 +1233,11 @@ class ItemMapperPaginatedTest extends MapperTestUtility
             ->withConsecutive(['items', 'news_feeds', 'feeds', 'items.feed_id = feeds.id'])
             ->will($this->returnSelf());
 
-        $this->builder->expects($this->exactly(5))
+        $this->builder->expects($this->exactly(6))
             ->method('andWhere')
             ->withConsecutive(
                 ['feeds.user_id = :userId'],
+                ['feeds.deleted_at = 0'],
                 ['x = y'],
                 ['items.search_index LIKE :term0'],
                 ['items.search_index LIKE :term1'],

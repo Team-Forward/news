@@ -13,24 +13,10 @@
 
 namespace OCA\News\Tests\Unit\Db;
 
-use OC\DB\QueryBuilder\Literal;
-use OCA\News\Db\Feed;
-use OCA\News\Db\FeedMapperV2;
-use OCA\News\Db\Folder;
 use OCA\News\Db\Item;
 use OCA\News\Db\ItemMapperV2;
-use OCA\News\Db\NewsMapperV2;
 use OCA\News\Service\Exceptions\ServiceValidationException;
 use OCA\News\Utility\Time;
-use OCP\AppFramework\Db\DoesNotExistException;
-use OCP\AppFramework\Db\MultipleObjectsReturnedException;
-use OCP\DB\IResult;
-use OCP\DB\QueryBuilder\IExpressionBuilder;
-use OCP\DB\QueryBuilder\IFunctionBuilder;
-use OCP\DB\QueryBuilder\IQueryBuilder;
-use OCP\DB\QueryBuilder\IQueryFunction;
-use OCP\IDBConnection;
-use Test\TestCase;
 
 /**
  * Class ItemMapperTest
@@ -40,8 +26,6 @@ use Test\TestCase;
 class ItemMapperAfterTest extends MapperTestUtility
 {
 
-    /** @var Time */
-    private $time;
     /** @var ItemMapperV2 */
     private $class;
 
@@ -51,10 +35,10 @@ class ItemMapperAfterTest extends MapperTestUtility
     protected function setUp(): void
     {
         parent::setUp();
-        $this->time = $this->getMockBuilder(Time::class)
+        $time = $this->getMockBuilder(Time::class)
                            ->getMock();
 
-        $this->class = new ItemMapperV2($this->db, $this->time);
+        $this->class = new ItemMapperV2($this->db, $time);
     }
 
     public function testFindAllInFeedAfter()
@@ -78,12 +62,13 @@ class ItemMapperAfterTest extends MapperTestUtility
             ->with('items', 'news_feeds', 'feeds', 'items.feed_id = feeds.id')
             ->will($this->returnSelf());
 
-        $this->builder->expects($this->exactly(3))
+        $this->builder->expects($this->exactly(4))
             ->method('andWhere')
             ->withConsecutive(
                 ['items.last_modified >= :updatedSince'],
                 ['feeds.user_id = :userId'],
-                ['feeds.id = :feedId']
+                ['feeds.id = :feedId'],
+                ['feeds.deleted_at = 0']
             )
             ->will($this->returnSelf());
 
@@ -142,13 +127,14 @@ class ItemMapperAfterTest extends MapperTestUtility
             ->with('items', 'news_feeds', 'feeds', 'items.feed_id = feeds.id')
             ->will($this->returnSelf());
 
-        $this->builder->expects($this->exactly(4))
+        $this->builder->expects($this->exactly(5))
             ->method('andWhere')
             ->withConsecutive(
                 ['items.last_modified >= :updatedSince'],
                 ['feeds.user_id = :userId'],
                 ['feeds.id = :feedId'],
-                ['items.unread = 1']
+                ['feeds.deleted_at = 0'],
+                ['items.unread = :unread']
             )
             ->will($this->returnSelf());
 
@@ -159,6 +145,11 @@ class ItemMapperAfterTest extends MapperTestUtility
                 'feedId' => 4,
                 'userId' => 'jack',
             ])
+            ->will($this->returnSelf());
+
+        $this->builder->expects($this->exactly(1))
+            ->method('setParameter')
+            ->with('unread', true)
             ->will($this->returnSelf());
 
         $this->builder->expects($this->once())
@@ -210,11 +201,12 @@ class ItemMapperAfterTest extends MapperTestUtility
             )
             ->will($this->returnSelf());
 
-        $this->builder->expects($this->exactly(3))
+        $this->builder->expects($this->exactly(4))
             ->method('andWhere')
             ->withConsecutive(
                 ['items.last_modified >= :updatedSince'],
                 ['feeds.user_id = :userId'],
+                ['feeds.deleted_at = 0'],
                 ['folders.id = :folderId']
             )
             ->will($this->returnSelf());
@@ -277,13 +269,14 @@ class ItemMapperAfterTest extends MapperTestUtility
             )
             ->will($this->returnSelf());
 
-        $this->builder->expects($this->exactly(4))
+        $this->builder->expects($this->exactly(5))
             ->method('andWhere')
             ->withConsecutive(
                 ['items.last_modified >= :updatedSince'],
                 ['feeds.user_id = :userId'],
+                ['feeds.deleted_at = 0'],
                 ['folders.id = :folderId'],
-                ['items.unread = 1']
+                ['items.unread = :unread']
             )
             ->will($this->returnSelf());
 
@@ -294,6 +287,11 @@ class ItemMapperAfterTest extends MapperTestUtility
                 'folderId' => 4,
                 'userId' => 'jack',
             ])
+            ->will($this->returnSelf());
+
+        $this->builder->expects($this->exactly(1))
+            ->method('setParameter')
+            ->with('unread', true)
             ->will($this->returnSelf());
 
         $this->builder->expects($this->once())
@@ -342,12 +340,13 @@ class ItemMapperAfterTest extends MapperTestUtility
             ->withConsecutive(['items', 'news_feeds', 'feeds', 'items.feed_id = feeds.id'])
             ->will($this->returnSelf());
 
-        $this->builder->expects($this->exactly(3))
+        $this->builder->expects($this->exactly(4))
             ->method('andWhere')
             ->withConsecutive(
                 ['items.last_modified >= :updatedSince'],
+                ['feeds.deleted_at = 0'],
                 ['feeds.user_id = :userId'],
-                ['items.unread = 1']
+                ['items.unread = :unread']
             )
             ->will($this->returnSelf());
 
@@ -357,6 +356,11 @@ class ItemMapperAfterTest extends MapperTestUtility
                 'updatedSince' => 1610903351,
                 'userId' => 'jack',
             ])
+            ->will($this->returnSelf());
+
+        $this->builder->expects($this->exactly(1))
+            ->method('setParameter')
+            ->with('unread', true)
             ->will($this->returnSelf());
 
         $this->builder->expects($this->once())
@@ -405,12 +409,13 @@ class ItemMapperAfterTest extends MapperTestUtility
             ->withConsecutive(['items', 'news_feeds', 'feeds', 'items.feed_id = feeds.id'])
             ->will($this->returnSelf());
 
-        $this->builder->expects($this->exactly(3))
+        $this->builder->expects($this->exactly(4))
             ->method('andWhere')
             ->withConsecutive(
                 ['items.last_modified >= :updatedSince'],
+                ['feeds.deleted_at = 0'],
                 ['feeds.user_id = :userId'],
-                ['items.starred = 1']
+                ['items.starred = :starred']
             )
             ->will($this->returnSelf());
 
@@ -420,6 +425,11 @@ class ItemMapperAfterTest extends MapperTestUtility
                 'updatedSince' => 1610903351,
                 'userId' => 'jack',
             ])
+            ->will($this->returnSelf());
+
+        $this->builder->expects($this->exactly(1))
+            ->method('setParameter')
+            ->with('starred', true)
             ->will($this->returnSelf());
 
         $this->builder->expects($this->once())
@@ -468,10 +478,11 @@ class ItemMapperAfterTest extends MapperTestUtility
             ->withConsecutive(['items', 'news_feeds', 'feeds', 'items.feed_id = feeds.id'])
             ->will($this->returnSelf());
 
-        $this->builder->expects($this->exactly(2))
+        $this->builder->expects($this->exactly(3))
             ->method('andWhere')
             ->withConsecutive(
                 ['items.last_modified >= :updatedSince'],
+                ['feeds.deleted_at = 0'],
                 ['feeds.user_id = :userId']
             )
             ->will($this->returnSelf());
@@ -533,10 +544,11 @@ class ItemMapperAfterTest extends MapperTestUtility
             ->withConsecutive(['items', 'news_feeds', 'feeds', 'items.feed_id = feeds.id'])
             ->will($this->returnSelf());
 
-        $this->builder->expects($this->exactly(2))
+        $this->builder->expects($this->exactly(3))
             ->method('andWhere')
             ->withConsecutive(
                 ['items.last_modified >= :updatedSince'],
+                ['feeds.deleted_at = 0'],
                 ['feeds.user_id = :userId']
             )
             ->will($this->returnSelf());

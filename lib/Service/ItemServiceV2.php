@@ -89,6 +89,7 @@ class ItemServiceV2 extends Service
     public function insertOrUpdate(Item $item): Entity
     {
         try {
+            /** @var Item $db_item */
             $db_item = $this->findByGuidHash($item->getFeedId(), $item->getGuidHash());
 
             // Transfer user modifications
@@ -216,11 +217,11 @@ class ItemServiceV2 extends Service
      * @param string $userId Item owner
      * @param int    $maxItemId
      *
-     * @return void
+     * @return int
      */
-    public function readAll(string $userId, int $maxItemId): void
+    public function readAll(string $userId, int $maxItemId): int
     {
-        $this->mapper->readAll($userId, $maxItemId);
+        return $this->mapper->readAll($userId, $maxItemId);
     }
 
     /**
@@ -243,7 +244,7 @@ class ItemServiceV2 extends Service
      * @param int    $feedId
      * @param string $guidHash
      *
-     * @return Item|Entity
+     * @return Item
      *
      * @throws DoesNotExistException
      * @throws MultipleObjectsReturnedException
@@ -307,7 +308,7 @@ class ItemServiceV2 extends Service
      */
     public function findAllAfter(string $userId, int $feedType, int $updatedSince): array
     {
-        if (!in_array($feedType, [ListType::STARRED, ListType::UNREAD, ListType::ALL_ITEMS])) {
+        if (!in_array($feedType, [ListType::STARRED, ListType::UNREAD, ListType::ALL_ITEMS], true)) {
             throw new ServiceValidationException('Trying to find in unknown type');
         }
 

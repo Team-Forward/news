@@ -24,6 +24,7 @@ use \OCP\AppFramework\Http;
 use \OCA\News\Service\Exceptions\ServiceException;
 use \OCA\News\Service\Exceptions\ServiceNotFoundException;
 use \OCA\News\Service\ItemServiceV2;
+use \OCA\News\Service\ShareService;
 use OCP\IUserSession;
 
 /**
@@ -44,6 +45,10 @@ class ItemController extends Controller
      */
     private $feedService;
     /**
+     * @var ShareService
+     */
+    private $shareService;
+    /**
      * @var IConfig
      */
     private $settings;
@@ -52,12 +57,14 @@ class ItemController extends Controller
         IRequest $request,
         FeedServiceV2 $feedService,
         ItemServiceV2 $itemService,
+        ShareService $shareService,
         IConfig $settings,
         ?IUserSession $userSession
     ) {
         parent::__construct($request, $userSession);
         $this->itemService = $itemService;
         $this->feedService = $feedService;
+        $this->shareService = $shareService;
         $this->settings = $settings;
     }
 
@@ -169,7 +176,8 @@ class ItemController extends Controller
                     );
                     break;
             }
-            $return['items'] = $items;
+            // Map sharer display names onto shared items
+            $return['items'] = $this->shareService->mapSharedByDisplayNames($items);
 
             // this gets thrown if there are no items
             // in that case just return an empty array
@@ -229,7 +237,8 @@ class ItemController extends Controller
             $return['newestItemId'] = $this->itemService->newest($this->getUserId())->getId();
             $return['feeds'] = $this->feedService->findAllForUser($this->getUserId());
             $return['starred'] = count($this->itemService->starred($this->getUserId()));
-            $return['items'] = $items;
+            // Map sharer display names onto shared items
+            $return['items'] = $this->shareService->mapSharedByDisplayNames($items);
 
             // this gets thrown if there are no items
             // in that case just return an empty array
@@ -317,5 +326,27 @@ class ItemController extends Controller
                 continue;
             }
         }
+    }
+
+
+    /**
+     * @NoAdminRequired
+     *
+     * @param int $itemId              Item to share
+     * @param string $shareRecipientId User to share the item with
+     */
+    public function share(int $itemId, string $shareRecipientId)
+    {
+        try {
+            $this->shareService->shareItemWithUser(
+                $this->getUserId(),
+                $itemId,
+                $shareRecipientId
+            );
+        } catch (ServiceNotFoundException $ex) {
+            return $this->error($ex, Http::STATUS_NOT_FOUND);
+        }
+
+        return [];
     }
 }

@@ -18,7 +18,6 @@ use FeedIo\Reader\ReadErrorException;
 use HTMLPurifier;
 
 use OCA\News\Db\FeedMapperV2;
-use OCA\News\Db\Folder;
 use OCA\News\Fetcher\FeedFetcher;
 use OCA\News\Service\Exceptions\ServiceConflictException;
 use OCA\News\Service\Exceptions\ServiceNotFoundException;
@@ -190,15 +189,18 @@ class FeedServiceV2 extends Service
         bool $full_text = false,
         ?string $title = null,
         ?string $user = null,
-        ?string $password = null
+        ?string $password = null,
+        bool $full_discover = true
     ): Entity {
         if ($this->existsForUser($userId, $feedUrl)) {
             throw new ServiceConflictException('Feed with this URL exists');
         }
 
-        $feeds = $this->explorer->discover($feedUrl);
-        if ($feeds !== []) {
-            $feedUrl = array_shift($feeds);
+        if ($full_discover) {
+            $feeds = $this->explorer->discover($feedUrl);
+            if ($feeds !== []) {
+                $feedUrl = array_shift($feeds);
+            }
         }
 
         try {
@@ -206,7 +208,7 @@ class FeedServiceV2 extends Service
              * @var Feed   $feed
              * @var Item[] $items
              */
-            list($feed, $items) = $this->feedFetcher->fetch($feedUrl, true, '0', $full_text, $user, $password);
+            list($feed, $items) = $this->feedFetcher->fetch($feedUrl, $full_text, $user, $password);
         } catch (ReadErrorException $ex) {
             $this->logger->debug($ex->getMessage());
             throw new ServiceNotFoundException($ex->getMessage());
@@ -307,7 +309,7 @@ class FeedServiceV2 extends Service
         $feed->setLastUpdateError(null);
 
         $unreadCount = 0;
-        array_map(function (Item $item) use (&$unreadCount) {
+        array_map(function (Item $item) use (&$unreadCount): void {
             if ($item->isUnread()) {
                 $unreadCount++;
             }
@@ -348,13 +350,15 @@ class FeedServiceV2 extends Service
      * @param int      $id        Feed ID
      * @param int|null $maxItemID Highest item ID to mark as read
      *
+     * @return int
+     *
      * @throws ServiceConflictException
      * @throws ServiceNotFoundException
      */
-    public function read(string $userId, int $id, ?int $maxItemID = null): void
+    public function read(string $userId, int $id, ?int $maxItemID = null): int
     {
         $feed = $this->find($userId, $id);
 
-        $this->mapper->read($userId, $feed->getId(), $maxItemID);
+        return $this->mapper->read($userId, $feed->getId(), $maxItemID);
     }
 }
