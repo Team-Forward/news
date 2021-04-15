@@ -214,7 +214,7 @@ app.controller('ShareController', function (ShareResource, Loading, SettingsReso
         if (!this.fetchedHashtags) {
             let hashtags = JSON.parse(SettingsResource.get('customHashtags'));
             this.customHashtagsList = hashtags.map(h => {
-                return { hashtag: h, value: false };
+                return { hashtag: h, value: true };
             });
             this.fetchedHashtags = true;
         }
