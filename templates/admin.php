@@ -240,6 +240,9 @@ style('news', 'admin');
                     </div>
                 </li>
                 <?php } ?>
+                <li class="columnHashtag"
+                    style="list-style-type: none;"
+                ></li>
             </ul>
             <?php } ?>
         </div>
