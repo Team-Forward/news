@@ -166,7 +166,7 @@ style('news', 'admin');
                 ?>
                 <li
                     style="display: inline-flex; margin-top: 0.7em">
-                    <a style="padding-top: 0.25em; width: 110px; overflow-wrap: break-word""
+                    <a style="padding-top: 0.25em; width: 400px; overflow-wrap: break-word"
                         class="title"
                         name="news-feed-element-flux"
                     >
@@ -184,6 +184,67 @@ style('news', 'admin');
             <?php } ?>
         </div>
     </div>
+
+    <div class="form-line">
+        <p>
+            <label for="news-feed-fetcher-timeout">
+                <?php p($l->t('Custom hashtags')); ?>
+            </label>
+        </p>
+        <p>
+            <em>
+            <?php p($l->t('List of hashtags that a user can automatically include in their social media post.')); ?></em>
+        </p>
+        <p>
+            <input type="text"
+                name="hashtag"
+                id="hashtag"
+                placeholder="<?php p($l->t('Enter a hashtag')); ?>"
+            >
+           <button
+                id="addHashtag"
+                class="icon-add"
+                style="padding-top: 1.3em;"
+                >
+            </button>
+        </p>
+        <div id="listHashtags">
+            <?php if (!empty($_['customHashtags'])) { ?>
+            <ul
+                name="news-feed-list-hashtag"
+                id="hashtags"
+                class="with-icon"
+                data-id="0"
+                style="margin-left: 0.5em; margin-top: 1em;display:flex; flex-direction: column; list-style:disc;"
+                news-droppable>
+                <!-- the li is repeated the following is an example -->
+                <?php foreach (explode(',', $_['customHashtags']) as $defaultHashtag) {
+                    $defaultHashtag = str_replace('"', '', $defaultHashtag);
+                    $defaultHashtag = str_replace('[', '', $defaultHashtag);
+                    $defaultHashtag = str_replace(']', '', $defaultHashtag);
+                ?>
+                <li class="columnHashtag"
+                    draggable="true"
+                    style="display: inline-flex; margin-top: 0.7em; width: 250px; justify-content: space-between">
+                    <a style="padding-top: 0.25em; width: 200px; overflow-wrap: break-word"
+                        class="title"
+                        name="news-feed-element-hashtag"
+                    >
+                        <?php echo($defaultHashtag); ?>
+                    </a>
+                    <div style="margin-left: 1em">
+                        <button
+                            class="icon-delete deleteHashtag"
+                            style="padding-top: 1.3em;">
+                        </button>
+                    </div>
+                </li>
+                <?php } ?>
+            </ul>
+            <?php } ?>
+        </div>
+    </div>
+
     <div id="news-saved-message">
         <span class="msg success"><?php p($l->t('Saved')); ?></span>
     </div>

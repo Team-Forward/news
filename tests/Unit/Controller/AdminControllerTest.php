@@ -78,7 +78,8 @@ class AdminControllerTest extends TestCase
             'useCronUpdates' => false,
             'exploreUrl' => 'test',
             'updateInterval' => 3601,
-            'defaultFeeds' => '["http://feed.com"]'
+            'defaultFeeds' => '["http://feed.com"]',
+            'customHashtags' => '["#testing"]'
         ];
         $map = [
             ['news','autoPurgeMinimumInterval', 60, 1],
@@ -88,7 +89,8 @@ class AdminControllerTest extends TestCase
             ['news','useCronUpdates', true, false,],
             ['news','exploreUrl', '', 'test'],
             ['news','updateInterval', 3600, 3601],
-            ['news','defaultFeeds', '', '["http://feed.com"]']
+            ['news','defaultFeeds', '', '["http://feed.com"]'],
+            ['news','customHashtags', '', '["#testing"]']
         ];
         $this->config->expects($this->exactly(count($map)))
             ->method('getAppValue')
@@ -115,7 +117,8 @@ class AdminControllerTest extends TestCase
             'useCronUpdates' => false,
             'exploreUrl' => 'test',
             'updateInterval' => 3601,
-            'defaultFeeds' => '["http://feed.com"]'
+            'defaultFeeds' => '["http://feed.com"]',
+            'customHashtags' => '["#testing"]'
         ];
 
         $this->config->expects($this->exactly(count($expected)))
@@ -128,7 +131,8 @@ class AdminControllerTest extends TestCase
                 ['news','useCronUpdates', false],
                 ['news','exploreUrl', 'test'],
                 ['news','updateInterval', 3601],
-                ['news','defaultFeeds', '["http://feed.com"]']
+                ['news','defaultFeeds', '["http://feed.com"]'],
+                ['news', 'customHashtags', '["#testing"]']
             );
 
         $map = [
@@ -139,7 +143,8 @@ class AdminControllerTest extends TestCase
             ['news','useCronUpdates', true, false],
             ['news','exploreUrl', '', 'test'],
             ['news','updateInterval', 3600, 3601],
-            ['news','defaultFeeds', '', '["http://feed.com"]']
+            ['news','defaultFeeds', '', '["http://feed.com"]'],
+            ['news', 'customHashtags', '', '["#testing"]']
         ];
         $this->config->expects($this->exactly(count($map)))
             ->method('getAppValue')
@@ -153,7 +158,8 @@ class AdminControllerTest extends TestCase
             $expected['useCronUpdates'],
             $expected['exploreUrl'],
             $expected['updateInterval'],
-            $expected['defaultFeeds']
+            $expected['defaultFeeds'],
+            $expected['customHashtags']
         );
 
         $this->assertEquals($expected, $response);

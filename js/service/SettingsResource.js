@@ -19,7 +19,8 @@ app.service('SettingsResource', function ($http, BASE_URL) {
         oldestFirst: null,
         preventReadOnScroll: false,
         compactExpand: false,
-        exploreUrl: ''
+        exploreUrl: '',
+        customHashtags: ''
     };
     this.defaultLanguageCode = 'en';
     this.supportedLanguageCodes = [

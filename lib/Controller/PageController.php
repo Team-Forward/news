@@ -134,9 +134,17 @@ class PageController extends Controller
             $exploreUrl = preg_replace('/feeds\.en\.json$/', '', $exploreUrl);
         }
 
+        // fetch custom hashtags from the app settings table
+        $customHashtags = $this->settings->getAppValue(
+            $this->appName,
+            'customHashtags',
+            Application::DEFAULT_SETTINGS['customHashtags']
+        );
+
         $result = [
             'language' => $this->l10n->getLanguageCode(),
-            'exploreUrl' => $exploreUrl
+            'exploreUrl' => $exploreUrl,
+            'customHashtags' => $customHashtags
         ];
 
         foreach ($settings as $setting) {
