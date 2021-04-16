@@ -11,6 +11,7 @@ app.controller('ContentController', function (Publisher, FeedResource, ItemResou
                                               $routeParams, $location, FEED_TYPE, ITEM_AUTO_PAGE_SIZE, Loading) {
     'use strict';
 
+    this.showDropdown = [];
     var self = this;
     ItemResource.clear();
 
@@ -38,7 +39,7 @@ app.controller('ContentController', function (Publisher, FeedResource, ItemResou
         var firstItem = orderedItems[0];
         // If getOrdering == 1, then the sorting is set to
         // newest first. So, item should be the first item
-        // 
+        //
         if (getOrdering()) {
             item = firstItem;
         }
@@ -106,7 +107,7 @@ app.controller('ContentController', function (Publisher, FeedResource, ItemResou
 
         item.keepUnread = !item.keepUnread;
     };
-    
+
     this.sortIds = function(first, second) {
         var firstInt = parseInt(first.value);
         var secondInt = parseInt(second.value);
@@ -221,4 +222,15 @@ app.controller('ContentController', function (Publisher, FeedResource, ItemResou
     };
 
     this.activeItem = this.getFirstItem();
+
+    this.openDropdown = function(itemId){
+        let actualItem = this.showDropdown[itemId];
+        this.showDropdown = [];
+        this.showDropdown[itemId] = !actualItem;
+    };
+
+    this.hide = function(){
+        this.showDropdown = [];
+    };
+
 });

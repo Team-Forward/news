@@ -97,6 +97,38 @@
     background-image: url('../img/rss.svg') !important;
 }
 
+.icon-facebook {
+    background-image: url('../img/facebook.svg') !important;
+}
+
+.icon-twitter {
+    background-image: url('../img/twitter.svg') !important;
+}
+
+
+.col-4 {
+    -ms-flex: 0 0 33.333333%;
+    flex: 0 0 33.333333%;
+    max-width: 33.333333%;
+    position: relative;
+    width: 100%;
+}
+
+.row {
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
+}
+
+.icon-dropdown{
+    background-position: center !important;
+    background-size: 24px;
+    padding: 2em !important;
+    min-height: 28px !important;
+    min-width: 28px !important;
+}
+
 .icon-full-text-enabled {
     background-image: url('../img/fulltext.svg');
     background-size: 50%;
