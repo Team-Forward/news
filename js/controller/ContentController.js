@@ -39,7 +39,7 @@ app.controller('ContentController', function (Publisher, FeedResource, ItemResou
         var firstItem = orderedItems[0];
         // If getOrdering == 1, then the sorting is set to
         // newest first. So, item should be the first item
-        // 
+        //
         if (getOrdering()) {
             item = firstItem;
         }
@@ -107,7 +107,7 @@ app.controller('ContentController', function (Publisher, FeedResource, ItemResou
 
         item.keepUnread = !item.keepUnread;
     };
-    
+
     this.sortIds = function(first, second) {
         var firstInt = parseInt(first.value);
         var secondInt = parseInt(second.value);
