@@ -54,6 +54,7 @@ class MigrateConfig implements IRepairStep
             'useCronUpdates'           => true,
             'exploreUrl'               => '',
             'updateInterval'           => 3600,
+            'defaultFeeds'             => '',
             'customHashtags'           => ''
         ];
     }

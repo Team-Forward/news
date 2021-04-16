@@ -78,6 +78,7 @@ class AdminControllerTest extends TestCase
             'useCronUpdates' => false,
             'exploreUrl' => 'test',
             'updateInterval' => 3601,
+            'defaultFeeds' => '["http://feed.com"]',
             'customHashtags' => '["#testing"]'
         ];
         $map = [
@@ -88,6 +89,7 @@ class AdminControllerTest extends TestCase
             ['news','useCronUpdates', true, false,],
             ['news','exploreUrl', '', 'test'],
             ['news','updateInterval', 3600, 3601],
+            ['news','defaultFeeds', '', '["http://feed.com"]'],
             ['news','customHashtags', '', '["#testing"]']
         ];
         $this->config->expects($this->exactly(count($map)))
@@ -115,6 +117,7 @@ class AdminControllerTest extends TestCase
             'useCronUpdates' => false,
             'exploreUrl' => 'test',
             'updateInterval' => 3601,
+            'defaultFeeds' => '["http://feed.com"]',
             'customHashtags' => '["#testing"]'
         ];
 
@@ -128,6 +131,7 @@ class AdminControllerTest extends TestCase
                 ['news','useCronUpdates', false],
                 ['news','exploreUrl', 'test'],
                 ['news','updateInterval', 3601],
+                ['news','defaultFeeds', '["http://feed.com"]'],
                 ['news', 'customHashtags', '["#testing"]']
             );
 
@@ -136,9 +140,10 @@ class AdminControllerTest extends TestCase
             ['news','autoPurgeCount', 200, 2],
             ['news','maxRedirects', 10, 3],
             ['news','feedFetcherTimeout', 60, 4],
-            ['news','useCronUpdates', true, false,],
+            ['news','useCronUpdates', true, false],
             ['news','exploreUrl', '', 'test'],
             ['news','updateInterval', 3600, 3601],
+            ['news','defaultFeeds', '', '["http://feed.com"]'],
             ['news', 'customHashtags', '', '["#testing"]']
         ];
         $this->config->expects($this->exactly(count($map)))
@@ -153,6 +158,7 @@ class AdminControllerTest extends TestCase
             $expected['useCronUpdates'],
             $expected['exploreUrl'],
             $expected['updateInterval'],
+            $expected['defaultFeeds'],
             $expected['customHashtags']
         );
 

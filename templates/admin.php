@@ -130,6 +130,64 @@ style('news', 'admin');
     <div class="form-line">
         <p>
             <label for="news-feed-fetcher-timeout">
+                <?php p($l->t('Default feeds')); ?>
+            </label>
+        </p>
+        <p>
+            <em>
+            <?php p($l->t('List of feeds imported by default to all users. The imported feeds are stored in a folder named "Recommended feeds".')); ?></em>
+        </p>
+        <p><input type="text"
+                name="urlFlux"
+                id="urlFlux"
+                placeholder="<?php p($l->t('Enter an URL')); ?>"
+            >
+           <button
+                id="addFeed"
+                class="icon-add"
+                style="padding-top: 1.3em;">
+            </button>
+        </p>
+
+        <div id="listFeeds">
+            <?php if (!empty($_['defaultFeeds'])) { ?>
+            <ul
+                name="news-feed-list-flux"
+                id="feeds"
+                class="with-icon"
+                data-id="0"
+                style="margin-left: 0.5em; margin-top: 1em;display:flex; flex-direction: column; list-style:disc"
+                news-droppable>
+                <!-- the li is repeated the following is an example -->
+                <?php foreach (explode(',', $_['defaultFeeds']) as $defaultFeed) {
+                    $defaultFeed = str_replace('"', '', $defaultFeed);
+                    $defaultFeed = str_replace('[', '', $defaultFeed);
+                    $defaultFeed = str_replace(']', '', $defaultFeed);
+                ?>
+                <li
+                    style="display: inline-flex; margin-top: 0.7em">
+                    <a style="padding-top: 0.25em; width: 400px; overflow-wrap: break-word"
+                        class="title"
+                        name="news-feed-element-flux"
+                    >
+                        <?php echo($defaultFeed); ?>
+                    </a>
+                    <div style="margin-left: 1em">
+                        <button
+                            class="icon-delete deleteFeed"
+                            style="padding-top: 1.3em;">
+                        </button>
+                    </div>
+                </li>
+                <?php } ?>
+            </ul>
+            <?php } ?>
+        </div>
+    </div>
+
+    <div class="form-line">
+        <p>
+            <label for="news-feed-fetcher-timeout">
                 <?php p($l->t('Custom hashtags')); ?>
             </label>
         </p>
@@ -157,7 +215,7 @@ style('news', 'admin');
                 id="hashtags"
                 class="with-icon"
                 data-id="0"
-                style="margin-left: 0.5em; margin-top: 1em;display:flex; flex-direction: column; list-style:disc"
+                style="margin-left: 0.5em; margin-top: 1em;display:flex; flex-direction: column; list-style:disc;"
                 news-droppable>
                 <!-- the li is repeated the following is an example -->
                 <?php foreach (explode(',', $_['customHashtags']) as $defaultHashtag) {
@@ -167,8 +225,8 @@ style('news', 'admin');
                 ?>
                 <li class="columnHashtag"
                     draggable="true"
-                    style="display: inline-flex; margin-top: 0.7em;">
-                    <a style="padding-top: 0.25em; width: 110px; overflow-wrap: break-word"
+                    style="display: inline-flex; margin-top: 0.7em; width: 250px; justify-content: space-between">
+                    <a style="padding-top: 0.25em; width: 200px; overflow-wrap: break-word"
                         class="title"
                         name="news-feed-element-hashtag"
                     >
@@ -182,10 +240,14 @@ style('news', 'admin');
                     </div>
                 </li>
                 <?php } ?>
+                <li class="columnHashtag"
+                    style="list-style-type: none;"
+                ></li>
             </ul>
             <?php } ?>
         </div>
     </div>
+
     <div id="news-saved-message">
         <span class="msg success"><?php p($l->t('Saved')); ?></span>
     </div>

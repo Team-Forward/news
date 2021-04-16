@@ -16,6 +16,7 @@
 
     $(document).ready(function () {
 
+        var listFeeds_result = [];
         var listHashtags_result = [];
 
         var useCronUpdatesInput =
@@ -36,12 +37,14 @@
             $('#news input[name="news-update-interval"]');
         var savedMessage = $('#news-saved-message');
 
-
+        var listFeeds = $('#news a[name="news-feed-element-flux"]')
+        listFeeds.each(function(index, objFeed) {
+            listFeeds_result.push(objFeed.innerText.replace(/['"]+/g, '').replace(/\\/g, '').replace(/[\[\]']+/g,''));
+        });
         var listHashtags = $('#news a[name="news-feed-element-hashtag"]')
         listHashtags.each(function(index, objHash) {
             listHashtags_result.push(objHash.innerText.replace(/['"]+/g, '').replace(/\\/g, '').replace(/[\[\]']+/g,''));
         });
-
 
         var saved = function () {
             if (savedMessage.is(':visible')) {
@@ -75,6 +78,7 @@
                 useCronUpdates: useCronUpdates,
                 exploreUrl: exploreUrl,
                 updateInterval: parseInt(updateInterval, 10),
+                defaultFeeds: listFeeds_result.length===0 ? "" : JSON.stringify(listFeeds_result),
                 customHashtags: listHashtags_result.length===0 ? "" : JSON.stringify(listHashtags_result)
             };
 
@@ -97,10 +101,27 @@
                 useCronUpdatesInput.prop('checked', data.useCronUpdates);
                 exploreUrlInput.val(data.exploreUrl);
                 updateIntervalInput.val(data.updateInterval);
+                $(" #listFeeds").load(" #feeds");
                 $(" #listHashtags").load(" #hashtags ");
-                });
+            });
 
         };
+
+        $( "#addFeed" ).click(function() {
+
+            var expression = /[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)?/gi;
+            var regex = new RegExp(expression);
+            var urlFlux = $("#urlFlux").val();
+
+            if(urlFlux.match(regex)){
+                listFeeds_result.push(urlFlux);
+                $("#urlFlux").val("");
+            }
+            else{
+                alert("Enter a valid URL!");
+            }
+            submit();
+        });
 
         $(document).ajaxComplete(function() {
             initDrag();
@@ -118,13 +139,19 @@
             submit();
         });
 
+        $(document).on('click',' .deleteFeed',function(){
+            var index = $(this).parents("li").index();
+            listFeeds_result.splice(index, 1);
+            submit();
+        });
+
         $(document).on('click',' .deleteHashtag',function(){
             var index = $(this).parents("li").index();
             listHashtags_result.splice(index, 1);
             submit();
         });
 
-        $('#news input[type="text"][name!="hashtag"]').blur(submit);
+        $('#news input[type="text"][name!="urlFlux"][name!="hashtag"]').blur(submit);
         $('#news input[type="checkbox"]').change(submit);
         $('#news-migrate').click(function () {
             var button = $(this);
