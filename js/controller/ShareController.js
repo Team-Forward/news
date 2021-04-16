@@ -214,7 +214,7 @@ app.controller('ShareController', function (ShareResource, Loading, SettingsReso
         if (!this.fetchedHashtags) {
             let hashtags = JSON.parse(SettingsResource.get('customHashtags'));
             this.customHashtagsList = hashtags.map(h => {
-                return { hashtag: h, value: false };
+                return { hashtag: h, value: false};
             });
             this.fetchedHashtags = true;
         }
@@ -238,7 +238,7 @@ app.controller('ShareController', function (ShareResource, Loading, SettingsReso
     };
 
     /** Indicates whether the custom hashtag selector is visible */
-    this.isCustomHashtagsVisible = false;
+    this.isCustomHashtagsVisible = true;
 
     this.customHashtagsVisible = function() {
         return this.isCustomHashtagsVisible;
