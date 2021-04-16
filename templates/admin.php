@@ -165,7 +165,8 @@ style('news', 'admin');
                     $defaultHashtag = str_replace('[', '', $defaultHashtag);
                     $defaultHashtag = str_replace(']', '', $defaultHashtag);
                 ?>
-                <li
+                <li class="columnHashtag"
+                    draggable="true"
                     style="display: inline-flex; margin-top: 0.7em;">
                     <a style="padding-top: 0.25em; width: 110px; overflow-wrap: break-word"
                         class="title"
