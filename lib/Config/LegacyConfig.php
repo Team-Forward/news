@@ -33,6 +33,8 @@ class LegacyConfig
     public $maxSize;
     public $exploreUrl;
     public $updateInterval;
+    public $customHashtags; // json array containing list of hashtags
+
 
     public function __construct(
         ?Folder $fileSystem,
@@ -49,6 +51,7 @@ class LegacyConfig
         $this->useCronUpdates = true;
         $this->exploreUrl = '';
         $this->updateInterval = 3600;
+        $this->customHashtags = '';
     }
 
     /**

@@ -15,6 +15,9 @@
     'use strict';
 
     $(document).ready(function () {
+
+        var listHashtags_result = [];
+
         var useCronUpdatesInput =
             $('#news input[name="news-use-cron-updates"]');
         var autoPurgeMinimumIntervalInput =
@@ -32,6 +35,13 @@
         var updateIntervalInput =
             $('#news input[name="news-update-interval"]');
         var savedMessage = $('#news-saved-message');
+
+
+        var listHashtags = $('#news a[name="news-feed-element-hashtag"]')
+        listHashtags.each(function(index, objHash) {
+            listHashtags_result.push(objHash.innerText.replace(/['"]+/g, '').replace(/\\/g, '').replace(/[\[\]']+/g,''));
+        });
+
 
         var saved = function () {
             if (savedMessage.is(':visible')) {
@@ -64,7 +74,8 @@
                 maxSize: parseInt(maxSize, 10),
                 useCronUpdates: useCronUpdates,
                 exploreUrl: exploreUrl,
-                updateInterval: parseInt(updateInterval, 10)
+                updateInterval: parseInt(updateInterval, 10),
+                customHashtags: listHashtags_result.length===0 ? "" : JSON.stringify(listHashtags_result)
             };
 
             var url = OC.generateUrl('/apps/news/admin');
@@ -74,7 +85,7 @@
                 contentType: 'application/json; charset=utf-8',
                 url: url,
                 data: JSON.stringify(data),
-                dataType: 'json'
+                dataType: 'json',
             }).then(function (data) {
                 saved();
                 autoPurgeMinimumIntervalInput
@@ -86,11 +97,34 @@
                 useCronUpdatesInput.prop('checked', data.useCronUpdates);
                 exploreUrlInput.val(data.exploreUrl);
                 updateIntervalInput.val(data.updateInterval);
-            });
+                $(" #listHashtags").load(" #hashtags ");
+                });
 
         };
 
-        $('#news input[type="text"]').blur(submit);
+        $(document).ajaxComplete(function() {
+            initDrag();
+        });
+
+        $( "#addHashtag" ).click(function() {
+            var hashtagVal = $("#hashtag").val();
+            if(hashtagVal!=""){
+                if(hashtagVal.charAt(0)!="#"){
+                    hashtagVal = "#"+hashtagVal;
+                }
+                listHashtags_result.push(hashtagVal);
+                $("#hashtag").val("");
+            }
+            submit();
+        });
+
+        $(document).on('click',' .deleteHashtag',function(){
+            var index = $(this).parents("li").index();
+            listHashtags_result.splice(index, 1);
+            submit();
+        });
+
+        $('#news input[type="text"][name!="hashtag"]').blur(submit);
         $('#news input[type="checkbox"]').change(submit);
         $('#news-migrate').click(function () {
             var button = $(this);
@@ -103,6 +137,85 @@
 
             return false;
         });
+
+        var cols = [];
+        var dragSrcEl = null;
+        var indexFrom = -1
+        var indexTo = -1;
+        initDrag();
+
+        function initDrag() {
+            cols = document.querySelectorAll('#hashtags .columnHashtag');
+            [].forEach.call(cols, addDnDHandlers);
+        }
+
+        function handleDragStart(e) {
+            dragSrcEl = this;
+            indexFrom = $(this).index();
+
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/html', this.outerHTML);
+        }
+
+        function handleDragOver(e) {
+            if (e.preventDefault) {
+            e.preventDefault();
+            }
+            this.classList.add('over');
+            e.dataTransfer.dropEffect = 'move';
+
+            return false;
+        }
+
+        function handleDragEnter(e) {
+            this.classList.add('dragElem');
+        }
+
+        function handleDragLeave(e) {
+            this.classList.remove('over');
+        }
+
+        function handleDrop(e) {
+            if (e.stopPropagation) {
+                e.stopPropagation();
+            }
+
+            if (dragSrcEl != this) {
+                this.parentNode.removeChild(dragSrcEl);
+                var dropHTML = e.dataTransfer.getData('text/html');
+                this.insertAdjacentHTML('beforebegin',dropHTML);
+                var dropElem = this.previousSibling;
+                addDnDHandlers(dropElem);
+                indexTo = $(this).index();
+            }
+            this.classList.remove('over');
+
+            return false;
+        }
+
+        function handleDragEnd(e) {
+            changeOrder(listHashtags_result, indexFrom, indexTo);
+            this.classList.remove('over');
+
+            submit();
+        }
+
+        function addDnDHandlers(elem) {
+            elem.addEventListener('dragstart', handleDragStart, false);
+            elem.addEventListener('dragenter', handleDragEnter, false)
+            elem.addEventListener('dragover', handleDragOver, false);
+            elem.addEventListener('dragleave', handleDragLeave, false);
+            elem.addEventListener('drop', handleDrop, false);
+            elem.addEventListener('dragend', handleDragEnd, false);
+        }
+
+        function changeOrder(arr, from, to) {
+            if(to!=-1){
+                let cutOut = arr.splice(from, 1) [0];
+                arr.splice(to-1, 0, cutOut);
+            }
+        };
+
     });
 
 

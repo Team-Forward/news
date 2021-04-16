@@ -8,8 +8,10 @@
  * @author Nicolas Wendling <nicolas.wendling1011@gmail.com>
  * @author Jimmy Huynh <natorisaki@gmail.com>
  * @author Aurélien David <dav.aurelien@gmail.com>
+ * @author Hamza Elhaddad <elhaddadhamza49@gmail.com>
+ * @author Ilyes Chergui Malih <ilyes.chergui.malih@outlook.fr>
  */
-app.controller('ShareController', function (ShareResource, Loading) {
+app.controller('ShareController', function (ShareResource, Loading, SettingsResource) {
     'use strict';
 
     /** Array containing users to share an item with */
@@ -178,17 +180,76 @@ app.controller('ShareController', function (ShareResource, Loading) {
         return media.some(m => this.isSocialAppEnabled(m));
     };
 
-    this.getFacebookUrl = function(url, intro){
-        return `https://www.facebook.com/sharer/sharer.php?u=${url}&quote=${intro.substring(0,this.facebookLimit)}`+
-                `...`;
+    this.getFacebookUrl = function(url, intro) {
+        let text = encodeURIComponent(this.generateShareText(intro));
+        return `https://www.facebook.com/sharer/sharer.php?u=${url}&quote=${text}...`;
     };
 
-    this.getTwitterUrl = function(url, intro){
-        return `https://twitter.com/intent/tweet?url=${url}&text=${intro.substring(0,this.twitterLimit)}`+
-                `...`;
+    this.getTwitterUrl = function(url, intro) {
+        let text = encodeURIComponent(this.generateShareText(intro));
+        return `https://twitter.com/intent/tweet?url=${url}&text=${text}...`;
     };
 
-    this.getEmailUrl = function(url, object, intro){
-        return encodeURI(`mailto:?subject=${object}&body=${intro.substring(0,this.emailLimit)}...\n\n${url}`);
+    this.getEmailUrl = function(url, object, intro) {
+        let text = this.generateShareText(intro);
+        return encodeURI(`mailto:?subject=${object}&body=${text}...\n\n${url}`);
+    };
+
+    this.generateShareText = function(intro) {
+        let hashtags = this.customHashtagsList.filter(h => h.value).map(h => `${h.hashtag}`).join(' ');
+        if (hashtags !== '') {
+            hashtags = '['+hashtags+'] ';
+        }
+        let excerpt = intro.substring(0, this.twitterLimit);
+
+        return hashtags + excerpt;
+    };
+
+    /** List of custom hashtags */
+    this.customHashtagsList = [];
+    /** Avoid fetching & mapping hashtags each time */
+    this.fetchedHashtags = false;
+
+    this.getCustomHashtags = function() {
+        if (!this.fetchedHashtags) {
+            let hashtags = JSON.parse(SettingsResource.get('customHashtags'));
+            this.customHashtagsList = hashtags.map(h => {
+                return { hashtag: h, value: false};
+            });
+            this.fetchedHashtags = true;
+        }
+        return this.customHashtagsList.map(x => x.hashtag);
+    };
+
+    this.toggleHashtag = function(selectedHashtag) {
+        let hashtag = this.customHashtagsList.find(h => h.hashtag === selectedHashtag);
+        if (hashtag) {
+            hashtag.value = !hashtag.value;
+        }
+    };
+
+    this.getHashtagValue = function(selectedHashtag) {
+        let hashtag = this.customHashtagsList.find(h => h.hashtag === selectedHashtag);
+        if (hashtag) {
+            return hashtag.value;
+        }
+
+        return false;
+    };
+
+    /** Indicates whether the custom hashtag selector is visible */
+    this.isCustomHashtagsVisible = true;
+
+    this.customHashtagsVisible = function() {
+        return this.isCustomHashtagsVisible;
+    };
+
+    this.toggleCustomHashtags = function() {
+        this.isCustomHashtagsVisible = !this.isCustomHashtagsVisible;
+        if (!this.isCustomHashtagsVisible) {
+            this.customHashtagsList.forEach(h => {
+                h.value = false;
+            });
+        }
     };
 });

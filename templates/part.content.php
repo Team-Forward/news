@@ -155,6 +155,31 @@
 
                         <div ng-if="Share.isAnySocialAppEnabled()">
                             <p class="label-group"> <?php p($l->t('Share on social media')) ?> </p>
+                            <!-- Hashtags -->
+                            <div ng-if="Share.getCustomHashtags().length > 0">
+                                <div class="default-hashtags-toggler">
+                                    <input
+                                        type="checkbox"
+                                        id="show-hashtags"
+                                        name="show-hashtags"
+                                        ng-checked="Share.customHashtagsVisible()"
+                                        ng-click="Share.toggleCustomHashtags()">
+                                    <label for="show-hashtags"><?php p($l->t('Include custom hashtags in post')) ?></label>
+                                </div>
+                                <div ng-if="Share.customHashtagsVisible()" class="default-hashtags">
+                                    <ul>
+                                        <li ng-repeat="hashtag in Share.getCustomHashtags()">
+                                            <input
+                                                type="checkbox"
+                                                id="{{ hashtag }}"
+                                                ng-checked="Share.getHashtagValue(hashtag)"
+                                                ng-click="Share.toggleHashtag(hashtag)">
+                                            <label for="{{ hashtag }}">{{ hashtag }}</label>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <!-- Social media buttons -->
                             <div class="row">
                                 <div ng-if="Share.isSocialAppEnabled('facebook')" class="col-4">
                                     <a target="_blank"
