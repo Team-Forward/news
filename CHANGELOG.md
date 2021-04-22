@@ -4,11 +4,17 @@ The format is almost based on [Keep a Changelog](https://keepachangelog.com/en/1
 
 ## [Unreleased]
 
-- v2 API implementation (folder part)
-- Implemented default feeds
-- Implemented custom hashtags
-
 ### Changed
+
+### Fixed
+
+## [15.4.0-tf] - 2021-04-22
+### Changed
+
+- v2 API implementation (folder part)
+- Generate share text when sharing on social media (!3)
+- Implemented default feeds (!1)
+- Implemented custom hashtags (!2)
 
 ### Fixed
 - Check category label for null (#1282)
