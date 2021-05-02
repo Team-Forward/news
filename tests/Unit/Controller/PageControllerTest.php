@@ -168,7 +168,8 @@ class PageControllerTest extends TestCase
                 'oldestFirst' => true,
                 'compactExpand' => true,
                 'language' => 'de',
-                'exploreUrl' => 'test'
+                'exploreUrl' => 'test',
+                'customHashtags' => '["#test"]'
             ]
         ];
 
@@ -185,15 +186,21 @@ class PageControllerTest extends TestCase
                 ['becka', 'news', 'compactExpand']
             )
             ->will($this->returnValue('1'));
-        $this->settings->expects($this->once())
+        $this->settings->expects($this->exactly(2))
             ->method('getAppValue')
-            ->with('news', 'exploreUrl')
-            ->will($this->returnValue(' '));
+            ->withConsecutive(
+                ['news', 'exploreUrl'],
+                ['news', 'customHashtags']
+            )
+            ->willReturnOnConsecutiveCalls(
+                '',
+                '["#test"]'
+            );
+
         $this->urlGenerator->expects($this->once())
             ->method('linkToRoute')
             ->with('news.page.explore', ['lang' => 'en'])
             ->will($this->returnValue('test'));
-
 
         $response = $this->controller->settings();
         $this->assertEquals($result, $response);
@@ -210,7 +217,8 @@ class PageControllerTest extends TestCase
                 'oldestFirst' => true,
                 'language' => 'de',
                 'compactExpand' => true,
-                'exploreUrl' => 'abc'
+                'exploreUrl' => 'abc',
+                'customHashtags' => '["#test"]'
             ]
         ];
 
@@ -227,10 +235,16 @@ class PageControllerTest extends TestCase
                 ['becka', 'news', 'compactExpand']
             )
             ->will($this->returnValue('1'));
-        $this->settings->expects($this->once())
+        $this->settings->expects($this->exactly(2))
             ->method('getAppValue')
-            ->with('news', 'exploreUrl')
-            ->will($this->returnValue('abc'));
+            ->withConsecutive(
+                ['news', 'exploreUrl'],
+                ['news', 'customHashtags']
+            )
+            ->willReturnOnConsecutiveCalls(
+                'abc',
+                '["#test"]'
+            );
         $this->urlGenerator->expects($this->never())
             ->method('getAbsoluteURL');
 
