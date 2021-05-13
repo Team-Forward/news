@@ -30,6 +30,14 @@ The following features are implemented in this version:
 
 For more details, view the [share feature documentation](https://github.com/Team-Forward/news/blob/master/docs/featureShare/README.md).
 
+### Team members
+* Marco Nassabain
+* Nicolas Wendling
+* Aurélien DAVID
+* Jimmy HUYNH
+* Ilyes CHERGUI-MALIH
+* Hamza ELHADDAD
+
 ## FAQ
 * [My browser shows a mixed content warning](https://github.com/nextcloud/news/blob/master/docs/faq/README.md#my-browser-shows-a-mixed-content-warning-connection-is-not-secure)
 * [I am getting: Exception: Some\\Class does not exist erros in my nextcloud.log](https://github.com/nextcloud/news/blob/master/docs/faq/README.md#i-am-getting-exception-someclass-does-not-exist-erros-in-my-nextcloudlog)
