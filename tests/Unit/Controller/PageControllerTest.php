@@ -169,7 +169,7 @@ class PageControllerTest extends TestCase
                 'compactExpand' => true,
                 'language' => 'de',
                 'exploreUrl' => 'test',
-                'customHashtags' => '["#test"]'
+                'customHashtags' => '',
             ]
         ];
 
@@ -190,13 +190,9 @@ class PageControllerTest extends TestCase
             ->method('getAppValue')
             ->withConsecutive(
                 ['news', 'exploreUrl'],
-                ['news', 'customHashtags']
+                ['news', 'customHashtags'],
             )
-            ->willReturnOnConsecutiveCalls(
-                '',
-                '["#test"]'
-            );
-
+            ->will($this->onConsecutiveCalls(' ', ''));
         $this->urlGenerator->expects($this->once())
             ->method('linkToRoute')
             ->with('news.page.explore', ['lang' => 'en'])
@@ -218,7 +214,7 @@ class PageControllerTest extends TestCase
                 'language' => 'de',
                 'compactExpand' => true,
                 'exploreUrl' => 'abc',
-                'customHashtags' => '["#test"]'
+                'customHashtags' => '',
             ]
         ];
 
@@ -239,12 +235,52 @@ class PageControllerTest extends TestCase
             ->method('getAppValue')
             ->withConsecutive(
                 ['news', 'exploreUrl'],
-                ['news', 'customHashtags']
+                ['news', 'customHashtags'],
             )
-            ->willReturnOnConsecutiveCalls(
-                'abc',
-                '["#test"]'
-            );
+            ->will($this->onConsecutiveCalls('abc', ''));
+        $this->urlGenerator->expects($this->never())
+            ->method('getAbsoluteURL');
+
+
+        $response = $this->controller->settings();
+        $this->assertEquals($result, $response);
+    }
+
+    public function testSettingsCustomHashtagsSet()
+    {
+        $result = [
+            'settings' => [
+                'showAll' => true,
+                'compact' => true,
+                'preventReadOnScroll' => true,
+                'oldestFirst' => true,
+                'language' => 'de',
+                'compactExpand' => true,
+                'exploreUrl' => '',
+                'customHashtags' => '["#nextcloud", "#news"]',
+            ]
+        ];
+
+        $this->l10n->expects($this->once())
+            ->method('getLanguageCode')
+            ->will($this->returnValue('de'));
+        $this->settings->expects($this->exactly(5))
+            ->method('getUserValue')
+            ->withConsecutive(
+                ['becka', 'news', 'showAll'],
+                ['becka', 'news', 'compact'],
+                ['becka', 'news', 'preventReadOnScroll'],
+                ['becka', 'news', 'oldestFirst'],
+                ['becka', 'news', 'compactExpand']
+            )
+            ->will($this->returnValue('1'));
+        $this->settings->expects($this->exactly(2))
+            ->method('getAppValue')
+            ->withConsecutive(
+                ['news', 'exploreUrl'],
+                ['news', 'customHashtags'],
+            )
+            ->will($this->onConsecutiveCalls('', '["#nextcloud", "#news"]'));
         $this->urlGenerator->expects($this->never())
             ->method('getAbsoluteURL');
 
