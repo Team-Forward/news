@@ -1,4 +1,4 @@
-# Nextcloud News app
+# Nextcloud News app - Team Forward Update Showcase
 
 ![Release status](https://github.com/nextcloud/news/workflows/Build%20and%20publish%20app%20release/badge.svg) ![Integration Tests](https://github.com/nextcloud/news/workflows/Integration%20Tests/badge.svg) ![Frontend tests](https://github.com/nextcloud/news/workflows/Frontend%20tests/badge.svg) [![Code coverage](https://img.shields.io/codecov/c/github/nextcloud/news.svg?style=flat)](https://codecov.io/gh/nextcloud/news/)
 
