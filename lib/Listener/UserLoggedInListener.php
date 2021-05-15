@@ -71,6 +71,11 @@ class UserLoggedInListener implements IEventListener
         // Convert the json string into a php variable
         $defaultFeeds = json_decode($defaultFeeds);
 
+        // If there are no default feeds we don't create the recommended feeds folder
+        if (is_null($defaultFeeds) || (is_array($defaultFeeds) && count($defaultFeeds) === 0)) {
+            return;
+        }
+
         // Fetch default folder, or create if inexistant
         $defaultFolderName = $this->l10n->t('Recommended feeds');
         $defaultFolder = $this->folderService->findFromUserByName($userId, $defaultFolderName);
