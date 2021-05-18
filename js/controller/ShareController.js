@@ -180,14 +180,16 @@ app.controller('ShareController', function (ShareResource, Loading, SettingsReso
         return media.some(m => this.isSocialAppEnabled(m));
     };
 
-    this.getFacebookUrl = function(url, intro) {
-        let text = encodeURIComponent(this.generateShareText(intro));
-        return `https://www.facebook.com/sharer/sharer.php?u=${url}&quote=${text}...`;
+    this.getFacebookUrl = function(url, intro, categories) {
+        const text = encodeURIComponent(this.generateShareText(intro));
+        const hashtags = categories.length > 0 ? `${categories[0]}` : '';
+        return `https://www.facebook.com/sharer/sharer.php?u=${url}&quote=${text}...&hashtag=${hashtags}`;
     };
 
-    this.getTwitterUrl = function(url, intro) {
-        let text = encodeURIComponent(this.generateShareText(intro));
-        return `https://twitter.com/intent/tweet?url=${url}&text=${text}...`;
+    this.getTwitterUrl = function(url, intro, categories) {
+        const text = encodeURIComponent(this.generateShareText(intro));
+        const hashtags = categories.join(',');
+        return `https://twitter.com/intent/tweet?url=${url}&text=${text}...&hashtags=${hashtags}`;
     };
 
     this.getEmailUrl = function(url, object, intro) {
@@ -202,7 +204,7 @@ app.controller('ShareController', function (ShareResource, Loading, SettingsReso
         }
         let excerpt = intro.substring(0, this.twitterLimit);
 
-        return hashtags + excerpt;
+        return hashtags + excerpt.trim();
     };
 
     /** List of custom hashtags */
