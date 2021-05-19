@@ -63,3 +63,6 @@ nbproject
 # Mac OS
 .DS_Store
 *.iml
+
+# Doxygen
+docs/doxygen/*
