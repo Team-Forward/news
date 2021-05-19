@@ -80,7 +80,7 @@ To receive notifications when a new News app version was released, simply add th
     https://github.com/nextcloud/news/releases.atom
 
 ## Screenshots
-![](screenshots/1.png)
+![](screenshots/4.png)
 
 ## Maintainers
 
