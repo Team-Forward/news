@@ -61,30 +61,67 @@ These Dependencies are only relevant if you want to build the source code:
 * npm
 * composer
 
-* The master branch will always be stable in conjunction with the latest master branch from Nextcloud
-* JavaScript and PHP libraries are not included anymore since 8.0.0 and will require you to run **make** after updating/installing the app
-* In your terminal go into the **nextcloud/apps/** directory and then run the following command:
 
-        git clone https://github.com/nextcloud/news.git
+
+* Install PHP dependencies
+
+        sudo apt install apache2 mysql-server php7.4 libapache2-mod-php7.4
+        php7.4-gd php7.4-json php7.4-mysql php7.4-curl php7.4-mbstring
+        php7.4-intl php-imagick php7.4-xml php7.4-zip php7.4-dom
+
+### Install Nextcloud
+* Clone the repository
+
+        git clone https://github.com/nextcloud/server.git --branch stable20
+        cd server
+        git submodule update --init
+
+* Install viewer app
+        
+        git clone https://github.com/nextcloud/server.git --branch stable20
+        cd server
+        git submodule update --init
+
+* Configure MySQL
+        
+        create user ‘nextcloud’@’localhost’ identified by ‘nextcloud’;
+        create database nextcloud;
+        grant all privileges on nextcloud.* to ‘nextcloud’@’localhost’;
+        flush privileges;
+        exit;
+        sudo service mysql restart
+
+* You can now launch nextcloud
+        
+        cd server
+        php -S localhost:8080
+
+### Install Nextcloud News
+* Cloner news dans les applications
+        
+        cd server/apps
+        git clone https://git.unistra.fr/team-forward/news
+
+* Finir l'installation
+        
         cd news
         make
 
-* If you are using a stable Nextcloud release, stay with the [latest git tag release which is running on your version](https://github.com/nextcloud/news/releases). To get an overview over all existing tags run:
+* You can now launch Nextcloud with the news app
+        
+        cd ../..
+        php -S localhost:8080
+        
 
-        git tag
 
- You can switch to a release which will be supported on your installation by running:
+        
 
-      git checkout tags/TAG
-      make  # if News version >= 8.0.0
+        
 
- For instance to use the 5.2.8 release, run:
+        
 
-      git checkout tags/5.2.8
 
-* Activate the **News** app in the apps menu
 
-To update the News app use change into the **nextcloud/apps/news/** directory using your terminal and then run:
+        
 
-    git pull --rebase origin master
-    make
+ 
