@@ -116,6 +116,7 @@ class ShareService
         $sharedItem->setSharedBy($userId);
 
         // Get 'shared with me' dummy feed
+        $this->feedService->purgeDeleted($shareRecipientId, null);
         $feedUrl = $this->urlGenerator->getBaseUrl() . '/news/sharedwithme';
         $feed = $this->feedService->findByUrl($shareRecipientId, $feedUrl);
         if (is_null($feed)) {
