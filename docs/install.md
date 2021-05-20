@@ -1,4 +1,4 @@
-# Installation/Update
+# Install Team Forward release of News
 
 ## Dependencies
 * PHP >= 7.2
@@ -32,16 +32,12 @@ Before you install the app do the following:
 
 Then proceed to install the app either from an archive (zip/tar.gz) or clone it from the repository using git
 
-## Installing from the [app store](https://apps.nextcloud.com/apps/news)
-This is the easiest solution: Simply go the the apps page (section: "Multimedia") and enable the News app
-
 ## Installing from archive
-* Go to the [Nextcloud News GitHub releases page](https://github.com/nextcloud/news/releases) and download the latest release/archive to your server
-* Starting with 8.0.0, there are two different releases: **news.tar.gz** and **Source code**. The first one requires no additional steps, the second one requires you to install the dependencies and compile the JavaScript. Choose the first one if you don't want to work on the code. If you want to install a version prior to 8.0.0, choose the **Source code** download.
+* Download the [Team Forward release](https://git.unistra.fr/team-forward/news/-/tags/15.4.0-tf) to your server.
 * On your server, check if there is a folder called **nextcloud/apps/news**. If there is one, delete it.
 * Extract the downloaded archive to the **nextcloud/apps/** folder.
-* Remove the version from the extracted folder (e.g. rename **nextcloud/apps/news-4.0.3/** to **nextcloud/apps/news/**
-* If you are a version greater than or equal to 8.0.0 and downloaded the **Source code** zip or tar.gz, you need to install the JavaScript and PHP dependencies and compile the JavaScript first. On your terminal, change into the **nextcloud/apps/news/** directory and run the following command (requires node >5.6, npm, curl, make and which):
+* Remove the version from the extracted folder (rename **nextcloud/apps/news-15.4.0-tf/** to **nextcloud/apps/news/**
+* Install the JavaScript and PHP dependencies and compile the JavaScript first. On your terminal, change into the **nextcloud/apps/news/** directory and run the following command (requires node >5.6, npm, curl, make and which):
 
         sudo -u www-data make  # www-data might vary depending on your distribution
 
@@ -60,31 +56,25 @@ These Dependencies are only relevant if you want to build the source code:
 * Node.js >= 6
 * npm
 * composer
+* In a terminal go into the **nextcloud/apps/** directory and run the following command
 
-* The master branch will always be stable in conjunction with the latest master branch from Nextcloud
-* JavaScript and PHP libraries are not included anymore since 8.0.0 and will require you to run **make** after updating/installing the app
-* In your terminal go into the **nextcloud/apps/** directory and then run the following command:
-
-        git clone https://github.com/nextcloud/news.git
+        git clone https://git.unistra.fr/team-forward/news
         cd news
         make
 
-* If you are using a stable Nextcloud release, stay with the [latest git tag release which is running on your version](https://github.com/nextcloud/news/releases). To get an overview over all existing tags run:
+* To get an overview over all existing tags run:
 
         git tag
 
- You can switch to a release which will be supported on your installation by running:
+* Activate the News app in the apps menu.
 
-      git checkout tags/TAG
-      make  # if News version >= 8.0.0
+To update the News app change into the **nextcloud/apps/news/** directory using your terminal and then run:
 
- For instance to use the 5.2.8 release, run:
+        git pull --rebase origin master
+        make
 
-      git checkout tags/5.2.8
+## Install Nextcloud with News (Team Forward Version) via Docker
 
-* Activate the **News** app in the apps menu
+        docker run -d -p 8080:80 mnassabain/nextcloud-news
 
-To update the News app use change into the **nextcloud/apps/news/** directory using your terminal and then run:
-
-    git pull --rebase origin master
-    make
+View [Nextcloud Docker Hub](https://hub.docker.com/_/nextcloud) page for full info on setting up a Nextcloud Docker server.
