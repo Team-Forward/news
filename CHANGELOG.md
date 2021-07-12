@@ -8,6 +8,8 @@ The format is almost based on [Keep a Changelog](https://keepachangelog.com/en/1
 
 ### Fixed
 
+- Fix NotNullConstraintViolation when sharing news items with users (#1406)
+
 ## [15.4.0-tf] - 2021-04-22
 ### Changed
 
